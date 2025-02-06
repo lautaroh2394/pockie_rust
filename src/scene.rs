@@ -17,11 +17,11 @@ pub struct Scene<'a> {
     position: Position,
     is_modal: bool,
     events: Vec<Event<'a>>,
-    manager: Rc<RefCell<&'a mut SceneManager<'a>>>,
+    manager: Rc<RefCell<SceneManager<'a>>>,
 }
 
 impl<'a> Scene<'a> {
-    pub fn new(p: Position,m: Rc<RefCell<&'a mut SceneManager<'a>>>) -> Scene<'a> {
+    pub fn new(p: Position,m: Rc<RefCell<SceneManager<'a>>>) -> Scene<'a> {
         Scene {
             elements: Vec::new(),
             position: p,
@@ -31,7 +31,7 @@ impl<'a> Scene<'a> {
         }
     }
 
-    pub fn new_full_screen(m: Rc<RefCell<&'a mut SceneManager<'a>>>) -> Scene<'a>{
+    pub fn new_full_screen(m: Rc<RefCell<SceneManager<'a>>>) -> Scene<'a>{
         let x = 0.0;
         let y = 0.0;
         let h = screen_height();
@@ -41,7 +41,7 @@ impl<'a> Scene<'a> {
         Scene::new(p, m)
     }
 
-    pub fn new_modal(p: Position, m: Rc<RefCell<&'a mut SceneManager<'a>>>) -> Scene<'a> {
+    pub fn new_modal(p: Position, m: Rc<RefCell<SceneManager<'a>>>) -> Scene<'a> {
         let mut s = Scene::new_full_screen(m);
         s.position = p;
         s.is_modal = true;
@@ -52,18 +52,19 @@ impl<'a> Scene<'a> {
         self.elements.push(Box::new(element));
     }
 
-    pub fn manage_events(self) {
+    pub fn manage_events(&self) {
         //let m: Rc<RefCell<&mut SceneManager<'a>>> = Rc::new(RefCell::new(manager));
-        for callback in self.events.iter(){
+        //let ref_self: Rc<RefCell<&Scene<'a>>> = Rc::new(RefCell::new(self));
+        for callback in /*ref_self.clone().borrow()*/self.events.iter(){
             callback(self.manager.clone());
         }
     }
 
-    pub fn is_modal(self) -> bool {
+    pub fn is_modal(&self) -> bool {
         self.is_modal
     }
 }
-type Event<'a> = Box<dyn Fn(Rc<RefCell<&'a mut SceneManager>>)>;
+type Event<'a> = Box<dyn Fn(Rc<RefCell<SceneManager>>)>;
 
 impl<'a> Positionable for Scene<'a> {
     fn get_pos(&self) -> &Position {
