@@ -1,4 +1,4 @@
-use macroquad::{prelude::*};
+use macroquad::prelude::*;
 use crate::{character::Character, clickable::{Clickable, Position, Positionable}};
 
 #[derive(Debug, Clone)]

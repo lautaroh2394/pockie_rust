@@ -1,10 +1,14 @@
+use std::{cell::RefCell, rc::Rc};
+
 use crate::scene_manager::SceneManager;
 
+pub type Event<'a> = Box<dyn Fn(Rc<RefCell<SceneManager>>)>;
+/*
 pub struct EventBus {
     events: Vec<Event>,
 }
 
-type Event = Option<Box<dyn Fn(&SceneManager)>>;
+//type Event = Option<Box<dyn Fn(&SceneManager)>>;
 
 impl EventBus {
     fn push(&mut self, event: Event){
@@ -20,3 +24,4 @@ impl EventBus {
         self.events = Vec::new();
     }
 }
+*/

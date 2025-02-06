@@ -3,14 +3,8 @@ use std::{cell::RefCell, rc::Rc};
 use macroquad::window::{screen_height, screen_width};
 
 use crate::{
-    clickable::{Clickable, Position, Positionable}, 
-    drawable::Drawable, 
-    //events::{Event, EventCreator}, 
-    scene_manager::SceneManager
+    clickable::{Clickable, Position, Positionable}, drawable::Drawable, events::Event, scene_manager::SceneManager, screenable::Screenable
 };
-
-
-pub trait Screenable: Drawable + Clickable {}
 
 pub struct Scene<'a> {
     elements: Vec<Box<dyn Screenable + 'a>>,
@@ -41,7 +35,7 @@ impl<'a> Scene<'a> {
         Scene::new(p, m)
     }
 
-    pub fn new_modal(p: Position, m: Rc<RefCell<SceneManager<'a>>>) -> Scene<'a> {
+    pub fn _new_modal(p: Position, m: Rc<RefCell<SceneManager<'a>>>) -> Scene<'a> {
         let mut s = Scene::new_full_screen(m);
         s.position = p;
         s.is_modal = true;
@@ -53,9 +47,7 @@ impl<'a> Scene<'a> {
     }
 
     pub fn manage_events(&self) {
-        //let m: Rc<RefCell<&mut SceneManager<'a>>> = Rc::new(RefCell::new(manager));
-        //let ref_self: Rc<RefCell<&Scene<'a>>> = Rc::new(RefCell::new(self));
-        for callback in /*ref_self.clone().borrow()*/self.events.iter(){
+        for callback in self.events.iter(){
             callback(self.manager.clone());
         }
     }
@@ -64,7 +56,6 @@ impl<'a> Scene<'a> {
         self.is_modal
     }
 }
-type Event<'a> = Box<dyn Fn(Rc<RefCell<SceneManager>>)>;
 
 impl<'a> Positionable for Scene<'a> {
     fn get_pos(&self) -> &Position {

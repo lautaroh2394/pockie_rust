@@ -3,25 +3,25 @@ use std::fmt::Debug;
 use crate::{board::Board, character::Character, clickable::{Clickable, Position, Positionable}};
 
 pub trait CharMenuOption {
-    fn execute(&self, c: Character, b: Board);
+    fn _execute(&self, c: Character, b: Board);
 }
 
 pub struct CharacterMenu {
-    options: Vec<Box<dyn CharMenuOption>>,
+    _options: Vec<Box<dyn CharMenuOption>>,
     position: Position,
 }
 
 impl CharacterMenu {
     pub fn new() -> CharacterMenu {
         CharacterMenu {
-            options: Vec::new(),
+            _options: Vec::new(),
             position: Position::new(),
         }
     }
 }
 
 impl Debug for CharacterMenu {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, _f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         std::fmt::Result::Ok(())
     }
 }
@@ -29,7 +29,7 @@ impl Debug for CharacterMenu {
 impl Clone for CharacterMenu {
     fn clone(&self) -> Self {
         CharacterMenu {
-            options: Vec::new(),
+            _options: Vec::new(),
             position: self.position.clone()
         }
     }
@@ -42,7 +42,7 @@ impl Positionable for CharacterMenu {
 }
 
 impl Clickable for CharacterMenu {
-    fn click_action(&mut self, x: f32, y: f32) {
+    fn click_action(&mut self, _x: f32, _y: f32) {
         
     }
 }

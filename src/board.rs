@@ -1,13 +1,16 @@
-use macroquad::{prelude::*};
+use macroquad::prelude::*;
 use crate::clickable::{Clickable, Position, Positionable};
 use crate::drawable::Drawable;
-use crate::scene::Screenable;
+use crate::screenable::Screenable;
 use crate::space::Space;
 use crate::character::Character;
 
+const DEFAULT_COLUMNS: i32 = 9;
+const DEFAULT_ROWS: i32 = 5;
+
 pub struct Board {
-    pub columns: i32,
-    pub rows: i32,
+    pub _columns: i32,
+    pub _rows: i32,
     pub map: Vec<Vec<Space>>,
     pub position: Position,
 }
@@ -38,31 +41,23 @@ impl Clickable for Board {
 }
 
 impl Board {
-    pub fn new() -> Board {
+    pub fn default() -> Board {
+        Board::new(DEFAULT_COLUMNS, DEFAULT_ROWS)
+    }
+    pub fn new(total_columns: i32, total_rows: i32) -> Board {
         let mut map = Vec::new();
-
-        const TOTAL_COLUMNS: i32 = 9;
-        const TOTAL_ROWS: i32 = 5;
 
         let board_width = screen_width() * 0.8;
         let board_height = board_width / 2.2;
-        let space_width = (board_width / TOTAL_COLUMNS as f32);
-        let space_height = (board_height as f32 / TOTAL_ROWS as f32);
+        let space_width = board_width / total_columns as f32;
+        let space_height = board_height as f32 / total_rows as f32;
 
         let board_init_x = (screen_width() - board_width) / 2.0;
         let board_init_y = (screen_height() - board_height)/ 4.0;
 
-        println!("board_width {board_width}");
-        println!("board_height {board_height}");
-        println!("board_init_x {board_init_x}");
-        println!("board_init_y {board_init_y}");
-        println!("space_width {space_width}");
-        println!("space_height {space_height}");
-        
-
-        for row in 0..TOTAL_ROWS {
+        for row in 0..total_rows {
             let mut new_row = Vec::new();
-            for column in 0..TOTAL_COLUMNS {
+            for column in 0..total_columns {
                 new_row.push(Space::new(
                     (board_init_x + (column as f32 * space_width)) as f32,
                     (board_init_y + (row as f32 * space_height)) as f32,
@@ -74,8 +69,8 @@ impl Board {
         }
 
         Board {
-            columns: TOTAL_COLUMNS,
-            rows: TOTAL_ROWS,
+            _columns: total_columns,
+            _rows: total_rows,
             position: Position {
                 x: board_init_x,
                 y: board_init_y,
