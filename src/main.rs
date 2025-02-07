@@ -21,12 +21,27 @@ async fn main() {
     let manager: SceneManager = SceneManager::new();
     let manager_ref = Rc::new(RefCell::new(manager));
     SceneManager::new_testing_scene(manager_ref.clone());
+    let manager_ref_2 = manager_ref.clone();
     
     loop {
-        clear_background(RED);
+        clear_background(DARKGRAY);
 
-        manager_ref.clone().borrow_mut().manage_events();
-        manager_ref.clone().borrow_mut().draw();
+        let m1 = manager_ref.clone();
+        let m2 = manager_ref.clone();
+        let m3 = manager_ref.clone();
+
+        {
+            let mut r1 = m1.borrow_mut();
+            r1.draw();
+        }
+
+        {
+            let mut r2 = m2.borrow_mut(); // no puedo tener dos ref mut al mismo tiempo
+            //r2.manage_events(m3);
+        }
+
+        //manager_ref.clone().borrow_mut().manage_events();
+        //manager_ref.clone().borrow_mut().draw();
 
         if is_key_down(KeyCode::Escape) {
             println!("Escape");

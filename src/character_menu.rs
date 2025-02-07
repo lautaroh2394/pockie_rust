@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use crate::{board::Board, character::Character, clickable::{Clickable, Position, Positionable}};
+use crate::{board::Board, character::Character, clickable::{Clickable, Position, Positionable}, events::Event};
 
 pub trait CharMenuOption {
     fn _execute(&self, c: Character, b: Board);
@@ -42,7 +42,7 @@ impl Positionable for CharacterMenu {
 }
 
 impl Clickable for CharacterMenu {
-    fn click_action(&mut self, _x: f32, _y: f32) {
+    fn click_action(&mut self, _x: f32, _y: f32, _: &mut Vec<Event>) {
         
     }
 }

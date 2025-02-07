@@ -1,8 +1,9 @@
-use macroquad::{prelude::*, ui::{hash, root_ui}};
+use std::{cell::RefCell, rc::Rc};
+
+use macroquad::{prelude::*, ui::{hash, root_ui, Ui}};
 
 use crate::{
-    character_menu::CharacterMenu, 
-    clickable::{Clickable, Position, Positionable}};
+    character_menu::CharacterMenu, clickable::{Clickable, Position, Positionable}, events::{Event, Modal}, scene::Scene, scene_manager::SceneManager};
 
 #[derive(Debug, Clone)]
 pub struct Character {
@@ -54,7 +55,19 @@ impl Positionable for Character {
 }
 
 impl Clickable for Character {
-    fn click_action(&mut self, _x: f32, _y: f32) {
+    fn click_action<'a>(&mut self, _x: f32, _y: f32, events: &mut Vec<Event>) {
         self.toggled = !&self.toggled;
+        let p = Rc::new(RefCell::new(self.position.clone()));
+        let new_modal = Modal {
+            id: hash!(),
+            position: Position {
+                x: self.position.x, y: self.position.y, w: self.position.w, h: self.position.h
+            },
+            f: Box::new(|ui: &mut Ui| {
+                ui.label(None, "¡Este es un modal!");
+                ui.label(None, "Haz clic fuera para cerrar");
+            })
+        };
+        events.push(Event::CreateModal(new_modal));
     }
 }

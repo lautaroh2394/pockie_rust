@@ -1,17 +1,18 @@
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::RefCell, ops::Deref, rc::Rc};
 
-use macroquad::window::{screen_height, screen_width};
+use macroquad::{math::Vec2, ui::{hash, root_ui, Ui}, window::{screen_height, screen_width}};
 
 use crate::{
-    clickable::{Clickable, Position, Positionable}, drawable::Drawable, events::Event, scene_manager::SceneManager, screenable::Screenable
+    clickable::{Clickable, Position, Positionable}, drawable::Drawable, events::{Event, Modal}, scene_manager::SceneManager, screenable::Screenable
 };
 
 pub struct Scene<'a> {
     elements: Vec<Box<dyn Screenable + 'a>>,
     position: Position,
     is_modal: bool,
-    events: Vec<Event<'a>>,
+    events: Vec<Event>,
     manager: Rc<RefCell<SceneManager<'a>>>,
+    callback: Option<&'a Modal>
 }
 
 impl<'a> Scene<'a> {
@@ -22,6 +23,7 @@ impl<'a> Scene<'a> {
             is_modal: false,
             events: Vec::new(),
             manager: m,
+            callback: None,
         }
     }
 
@@ -35,10 +37,11 @@ impl<'a> Scene<'a> {
         Scene::new(p, m)
     }
 
-    pub fn _new_modal(p: Position, m: Rc<RefCell<SceneManager<'a>>>) -> Scene<'a> {
-        let mut s = Scene::new_full_screen(m);
+    pub fn new_modal(p: Position, m: Rc<RefCell<SceneManager<'a>>>, modal_info: &'a Modal) -> Scene<'a> {
+        let mut s: Scene<'a> = Scene::new_full_screen(m);
         s.position = p;
         s.is_modal = true;
+        s.callback = Some(modal_info);
         s
     }
 
@@ -46,9 +49,14 @@ impl<'a> Scene<'a> {
         self.elements.push(Box::new(element));
     }
 
-    pub fn manage_events(&self) {
-        for callback in self.events.iter(){
-            callback(self.manager.clone());
+    pub fn manage_events(&'a self, manager_ref: Rc<RefCell<SceneManager<'a>>>) {
+        for event in self.events.iter(){
+            match event {
+                Event::CreateModal(modal_info) => {
+                    manager_ref.clone().borrow_mut().push_scene(Scene::new_modal(modal_info.position.clone(), manager_ref.clone(), modal_info));
+                },
+                _ => ()
+            };
         }
     }
 
@@ -65,16 +73,29 @@ impl<'a> Positionable for Scene<'a> {
 
 impl<'a> Drawable for Scene<'a> {
     fn draw(&self) {
-        for element in self.elements.iter() {
-            element.draw();
+        if self.is_modal {
+            let modal_info = self.callback.unwrap();
+            root_ui().window(
+                hash!(),
+                Vec2::new(100.0, 100.0),
+                Vec2::new(200.0, 500.0),
+                |ui| {
+                    (&modal_info.f)(ui);
+                }
+            );
+        }
+        else {
+            for element in self.elements.iter() {
+                element.draw();
+            }
         }
     }
 }
 
 impl<'a> Clickable for Scene<'a> {
-    fn click_action(&mut self, x: f32, y: f32) {
+    fn click_action(&mut self, x: f32, y: f32, _: &mut Vec<Event>) {
         for element in self.elements.iter_mut() {
-            element.click(x, y);
+            element.click(x, y, &mut self.events);
         }
     }
 

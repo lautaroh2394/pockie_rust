@@ -1,3 +1,5 @@
+use crate::events::Event;
+
 #[derive(Debug, Clone)]
 pub struct Position {
     pub x: f32,
@@ -13,6 +15,7 @@ impl Position {
         }
     }
 }
+
 
 pub trait Positionable {
     fn get_pos(&self) -> &Position;
@@ -35,11 +38,11 @@ pub trait Positionable {
 }
 
 pub trait Clickable: Positionable {
-    fn click_action(&mut self, x: f32, y: f32);
+    fn click_action(&mut self, x: f32, y: f32, events: &mut Vec<Event>);
     
-    fn click(&mut self, x: f32, y: f32) -> bool {
+    fn click(&mut self, x: f32, y: f32, events: &mut Vec<Event>) -> bool {
         if self.is_clicked(x, y) {
-            self.click_action(x,y);
+            self.click_action(x,y, events);
             return true;
         }
         return false;

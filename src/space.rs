@@ -1,5 +1,5 @@
 use macroquad::prelude::*;
-use crate::{character::Character, clickable::{Clickable, Position, Positionable}};
+use crate::{character::Character, clickable::{Clickable, Position, Positionable}, events::Event};
 
 #[derive(Debug, Clone)]
 pub struct Space {
@@ -15,11 +15,11 @@ impl Positionable for Space {
 }
 
 impl Clickable for Space {
-    fn click_action(&mut self, x: f32, y: f32){
+    fn click_action(&mut self, x: f32, y: f32, events: &mut Vec<Event>){
         if let Some(c) = &mut self.character {
-            c.click(x, y);
+            c.click(x, y, events);
             return;
-        } 
+        }
         self.toggled = !self.toggled;
     }
 }

@@ -1,8 +1,20 @@
 use std::{cell::RefCell, rc::Rc};
 
-use crate::scene_manager::SceneManager;
+use macroquad::ui::{Id, Ui};
 
-pub type Event<'a> = Box<dyn Fn(Rc<RefCell<SceneManager>>)>;
+use crate::{clickable::Position, scene_manager::SceneManager};
+
+//pub type Event<'a> = Box<dyn Fn(Rc<RefCell<SceneManager<'a>>>)>;
+
+pub enum Event {
+    CreateModal(Modal),
+}
+
+pub struct Modal {
+    pub id: Id,
+    pub position: Position,
+    pub f: Box<dyn Fn(&mut Ui)>,
+}
 /*
 pub struct EventBus {
     events: Vec<Event>,

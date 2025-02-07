@@ -1,6 +1,7 @@
 use macroquad::prelude::*;
 use crate::clickable::{Clickable, Position, Positionable};
 use crate::drawable::Drawable;
+use crate::events::Event;
 use crate::screenable::Screenable;
 use crate::space::Space;
 use crate::character::Character;
@@ -22,13 +23,13 @@ impl Positionable for Board {
 }
 
 impl Clickable for Board {
-    fn click_action(&mut self, x: f32, y: f32) {
+    fn click_action(&mut self, x: f32, y: f32, events: &mut Vec<Event>) {
         for row in self.map.iter_mut() {
             let mut clicked = false;
 
             for space in row {
                 println!("Space clicked?");
-                if space.click(x, y) {
+                if space.click(x, y, events) {
                     println!("Space clicked");
                     clicked = true;
                     break; // No need to check the rest
