@@ -41,5 +41,5 @@ pub trait GameObject {
     }
 
     fn set_status(&mut self, _: BoardStatus){}
-    fn get_status(&self) -> &BoardStatus { &BoardStatus::IDLE }
+    fn get_status(&self) -> &BoardStatus { &BoardStatus::IDLE(None) }
 }

@@ -7,15 +7,13 @@ use crate::{
     models::position::Position,
 };
 
-use super::space::Space;
-
 pub struct Scene {
     pub elements: Vec<Box<dyn GameObject>>,
     pub events: Vec<Event>,
     pub position: Position
 }
 
-impl<'a> Scene {
+impl Scene {
     pub fn new() -> Scene {
         let x = 0.0;
         let y = 0.0;

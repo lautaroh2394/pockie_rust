@@ -6,4 +6,5 @@ pub enum Event {
     BoardIdle,
     BoardSelectVictim,
     BoardSelectMove(Space),
+    BoardToggleIdleMove(Space)
 }

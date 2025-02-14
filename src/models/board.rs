@@ -23,6 +23,61 @@ pub struct Board {
 }
 
 impl Board {    
+    pub fn toggle_status(board_status: &BoardStatus, space: &Space) -> Option<BoardStatus> {
+        match board_status {
+            BoardStatus::IDLE(None) => {
+                Some(
+                    BoardStatus::SELECTING_MOVE(Some(Space {
+                        position: Position {
+                            x: space.get_x(), y: space.get_y(), h: space.get_height(), w: space.get_height()
+                        },
+                        toggled: false,
+                        x_index: space.x_index,
+                        y_index: space.y_index
+                    }))
+                )
+            },
+            BoardStatus::IDLE(Some(_)) => {
+                Some(
+                    BoardStatus::SELECTING_MOVE(Some(Space {
+                        position: Position {
+                            x: space.get_x(), y: space.get_y(), h: space.get_height(), w: space.get_height()
+                        },
+                        toggled: false,
+                        x_index: space.x_index,
+                        y_index: space.y_index
+                    }))
+                )
+            },
+            BoardStatus::SELECTING_MOVE(Some(_)) => {
+                Some(
+                    BoardStatus::IDLE(Some(Space {
+                        position: Position {
+                            x: space.get_x(), y: space.get_y(), h: space.get_height(), w: space.get_height()
+                        },
+                        toggled: false,
+                        x_index: space.x_index,
+                        y_index: space.y_index
+                    }))
+                )
+            },
+            BoardStatus::SELECTING_MOVE(None) => {
+                Some(
+                    BoardStatus::IDLE(Some(Space {
+                        position: Position {
+                            x: space.get_x(), y: space.get_y(), h: space.get_height(), w: space.get_height()
+                        },
+                        toggled: false,
+                        x_index: space.x_index,
+                        y_index: space.y_index
+                    }))
+                )
+            },
+            _ => None            
+        }
+        
+    }
+
     pub fn default() -> Board {
         Board::new(DEFAULT_COLUMNS, DEFAULT_ROWS)
     }
@@ -62,7 +117,7 @@ impl Board {
                 h: board_height
             },
             map,
-            status: BoardStatus::IDLE,
+            status: BoardStatus::IDLE(None),
         }
     }
 }
@@ -94,22 +149,25 @@ impl GameObject for Board {
     }
 
     fn draw(&self){
+        draw_rectangle(self.get_x(), self.get_y(),  self.get_width(), self.get_height(), GRAY);
+
         match &self.status {
             BoardStatus::SELECTING_MOVE(space_to_move) => {
-                draw_rectangle(self.get_x(), self.get_y(),  self.get_width(), self.get_height(), GRAY);
-                for row in self.map.iter() {
-                    for space in row {
-                        if space.near(space_to_move) {
-                            space.draw_selectable();
-                        }
-                        else {
-                            space.draw();
+                // todo: no está mostrando los disponibles a mover
+                if let Some(e) = space_to_move {
+                    for row in self.map.iter() {
+                        for space in row {
+                            if space.near(e) {
+                                space.draw_selectable();
+                            }
+                            else {
+                                space.draw();
+                            }
                         }
                     }
                 }
             },
             _ => {
-                draw_rectangle(self.get_x(), self.get_y(),  self.get_width(), self.get_height(), GRAY);
                 for row in self.map.iter() {
                     for space in row {
                         space.draw();

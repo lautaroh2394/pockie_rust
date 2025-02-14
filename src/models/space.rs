@@ -20,8 +20,8 @@ impl Space {
     }
 
     pub fn near(&self, space: &Space) -> bool {
-        let horizontally_near = (space.x_index - self.x_index).abs() <= 2;
-        let verticallly_near = (space.y_index - self.y_index).abs() <= 2;
+        let horizontal = (space.x_index - self.x_index).abs();
+        let vertical = (space.y_index - self.y_index).abs();
         /*
         println!("
 space.x_index => {},
@@ -42,7 +42,7 @@ vertically_near = {}",
         verticallly_near
         );
          */
-        horizontally_near && verticallly_near
+        horizontal + vertical <= 2
     }
 
     pub fn draw_selectable(&self) {
@@ -67,7 +67,7 @@ impl GameObject for Space {
     // todo: events should be "scene_events"
     fn click_action(&mut self, _: &Position, events: &mut Vec<Event>){
         self.toggled = !self.toggled;
-        events.push(Event::BoardSelectMove(Space {
+        events.push(Event::BoardToggleIdleMove(Space {
             position: Position {
                 x: self.get_x(),
                 y: self.get_y(),

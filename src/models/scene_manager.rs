@@ -36,19 +36,27 @@ impl SceneManager {
         for scene in self.scenes.iter_mut().rev() {
             for event in scene.events.iter() {
                 match event {
+                    Event::BoardToggleIdleMove(space) => {
+                        let status = scene.elements[0].get_status();
+                        let status = Board::toggle_status(status, space);
+                        if let Some(s) = status {
+                            scene.elements[0].set_status(s);
+                        }
+                    },
                     Event::BoardSelectMove(space) => {
-                        scene.elements[0].set_status(BoardStatus::SELECTING_MOVE(Space {
+                        scene.elements[0].set_status(BoardStatus::SELECTING_MOVE(Some(Space {
                             position: Position {
                                 x: space.get_x(), y: space.get_y(), h: space.get_height(), w: space.get_height()
                             },
                             toggled: false,
                             x_index: space.x_index,
                             y_index: space.y_index
-                        }));
+                        })));
                     },
                     _ => {}
                 }
             }
+            scene.events = Vec::new();
         }
     }
 }
