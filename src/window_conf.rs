@@ -8,6 +8,5 @@ pub fn default_conf() -> Conf {
         window_width: 1080,
         ..Default::default()
     };
-    dbg!(&conf);
     conf
 }

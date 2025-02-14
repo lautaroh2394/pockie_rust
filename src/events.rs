@@ -6,9 +6,6 @@ use crate::{clickable::Position, scene_manager::SceneManager};
 
 //pub type Event<'a> = Box<dyn Fn(Rc<RefCell<SceneManager<'a>>>)>;
 
-pub enum Event {
-    CreateModal(Modal),
-}
 
 pub struct Modal {
     pub id: Id,
