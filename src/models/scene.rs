@@ -1,10 +1,15 @@
 
 use macroquad::window::{screen_height, screen_width};
-
 use crate::{
-    enums::event::Event, 
+    enums::{
+        event::Event, 
+        board_status::BoardStatus,
+    },
     traits::game_object::GameObject,
-    models::position::Position,
+    models::{
+        position::Position,
+        board::Board,
+    },
 };
 
 pub struct Scene {
@@ -29,6 +34,25 @@ impl Scene {
     
     pub fn push(&mut self, element: Box<dyn GameObject>){
         self.elements.push(element);
+    }
+
+    pub fn manage_events(&mut self, events: &mut Vec<Event>){
+        for event in self.events.iter() {
+            match event {
+                Event::BoardToggleIdleMove(space) => {
+                    let status = self.elements[0].get_status();
+                    let status = Board::toggle_status(status, space);
+                    if let Some(s) = status {
+                        self.elements[0].set_status(s);
+                    }
+                },
+                Event::BoardSelectMove(space) => {
+                    self.elements[0].set_status(BoardStatus::SELECTING_MOVE(Some(space.clone())));
+                },
+                _ => {}
+            }
+        }
+        self.events = Vec::new();
     }
 }
 

@@ -1,14 +1,10 @@
-use crate::enums::board_status::BoardStatus;
 use crate::models::{
     scene::Scene,
     board::Board,
+    position::Position
 };
 use crate::enums::event::Event;
 use crate::traits::game_object::GameObject;
-
-use super::position::Position;
-use super::space::Space;
-
 
 pub struct SceneManager {
     scenes: Vec<Scene>,
@@ -34,30 +30,16 @@ impl SceneManager {
 
     pub fn manage_events(&mut self) {
         for scene in self.scenes.iter_mut().rev() {
-            for event in scene.events.iter() {
-                match event {
-                    Event::BoardToggleIdleMove(space) => {
-                        let status = scene.elements[0].get_status();
-                        let status = Board::toggle_status(status, space);
-                        if let Some(s) = status {
-                            scene.elements[0].set_status(s);
-                        }
-                    },
-                    Event::BoardSelectMove(space) => {
-                        scene.elements[0].set_status(BoardStatus::SELECTING_MOVE(Some(Space {
-                            position: Position {
-                                x: space.get_x(), y: space.get_y(), h: space.get_height(), w: space.get_height()
-                            },
-                            toggled: false,
-                            x_index: space.x_index,
-                            y_index: space.y_index
-                        })));
-                    },
-                    _ => {}
-                }
-            }
-            scene.events = Vec::new();
+            scene.manage_events(&mut self.events);
         }
+        for event in self.events.iter() {
+            self.manage_event(event);
+        }
+        self.events = Vec::new();
+    }
+
+    fn manage_event(&self, _event: &Event){
+        
     }
 }
 
