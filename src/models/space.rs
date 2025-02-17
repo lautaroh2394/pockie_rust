@@ -1,6 +1,13 @@
 use macroquad::{color::{GREEN, PURPLE, WHITE, YELLOW}, shapes::draw_rectangle};
 
-use crate::{enums::event::Event, models::position::Position, traits::game_object::GameObject};
+use crate::{
+    enums::event::{
+        BoardEvent, 
+        SceneEvent
+    }, 
+    models::position::Position, 
+    traits::game_object::GameObject
+};
 
 const SPACE_PAD: f32 = 10.0;
 
@@ -53,14 +60,21 @@ impl Space {
 }
 
 
-impl GameObject for Space {
+impl GameObject<SceneEvent> for Space {
     // todo: events should be "scene_events"?
-    fn click_action(&mut self, _: &Position, events: &mut Vec<Event>){
+    fn click_action(&mut self, _: &Position, events: &mut Vec<SceneEvent>){
         self.toggled = !self.toggled;
-        events.push(Event::BoardToggleIdleMove(self.clone()));
+        events.push(
+            SceneEvent::CreateModal
+            /*
+            SceneEvent::BoardEvent(
+                BoardEvent::BoardToggleIdleMove(self.clone())
+            )
+             */
+        );
     }
 
-    fn default_click_condition(&self, position: &Position, _: &mut Vec<Event>) -> bool {
+    fn default_click_condition(&self, position: &Position, _: &mut Vec<SceneEvent>) -> bool {
         let overlaps_x = (self.get_x() + SPACE_PAD <= position.x) && (self.get_x() + self.get_width() - SPACE_PAD >= position.x);
         let overlaps_y = (self.get_y() + SPACE_PAD <= position.y) && (self.get_y() + self.get_height() - SPACE_PAD >= position.y);
         overlaps_x && overlaps_y

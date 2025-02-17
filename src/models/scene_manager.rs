@@ -3,12 +3,12 @@ use crate::models::{
     board::Board,
     position::Position
 };
-use crate::enums::event::Event;
+use crate::enums::event::{SceneEvent};
 use crate::traits::game_object::GameObject;
 
 pub struct SceneManager {
     scenes: Vec<Scene>,
-    events: Vec<Event>
+    events: Vec<SceneEvent>
 }
 
 impl SceneManager {
@@ -32,14 +32,16 @@ impl SceneManager {
         for scene in self.scenes.iter_mut().rev() {
             scene.manage_events(&mut self.events);
         }
+        
         for event in self.events.iter() {
-            self.manage_event(event);
+            match event {
+                SceneEvent::CreateModal => {
+                    self.scenes.push(Scene::new_modal());
+                },
+                _ => ()
+            }
         }
         self.events = Vec::new();
-    }
-
-    fn manage_event(&self, _event: &Event){
-        
     }
 }
 
@@ -53,5 +55,13 @@ impl SceneManager {
        let scene = self.scenes.last_mut().unwrap();
        let position = Position { x, y, w:0.0, h:0.0};
        scene.click(&position, &mut self.events);
+    }
+
+    pub fn pop_scene(&mut self) {
+        self.scenes.pop();
+    }
+
+    pub fn empty(&self) -> bool {
+        self.scenes.len() == 0
     }
 }

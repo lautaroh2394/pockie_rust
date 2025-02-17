@@ -16,9 +16,10 @@ async fn main() {
         manager.manage_events();
         manager.draw();
         
-        if is_key_down(KeyCode::Escape) {
+        if is_key_released(KeyCode::Escape) {
             println!("Escape");
-            break;
+            manager.pop_scene();
+            if manager.empty() { break }
         }
 
         if is_mouse_button_released(MouseButton::Left){

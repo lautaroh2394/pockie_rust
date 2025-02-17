@@ -1,8 +1,8 @@
-use crate::{enums::{board_status::BoardStatus, event::Event}, models::position::Position};
+use crate::{enums::{board_status::BoardStatus, event::SceneEvent}, models::position::Position};
 
-pub trait GameObject {
+pub trait GameObject<T> {
     fn draw(&self);
-    fn click_action(&mut self, position: &Position, events: &mut Vec<Event>);
+    fn click_action(&mut self, position: &Position, events: &mut Vec<T>);
     fn get_pos(&self) -> &Position;
 
     fn get_x(&self) -> f32 {
@@ -21,7 +21,7 @@ pub trait GameObject {
         self.get_pos().h
     }
     
-    fn click(&mut self, position: &Position, events: &mut Vec<Event>) -> bool {
+    fn click(&mut self, position: &Position, events: &mut Vec<T>) -> bool {
         if self.is_clicked(position, events) {
             self.click_action(position, events);
             return true;
@@ -29,14 +29,14 @@ pub trait GameObject {
         false
     }
 
-    fn default_click_condition(&self, position: &Position, _: &mut Vec<Event>) -> bool {
+    fn default_click_condition(&self, position: &Position, _: &mut Vec<T>) -> bool {
         let overlaps_x = (self.get_x() <= position.x) && (self.get_x() + self.get_width() >= position.x);
         let overlaps_y = (self.get_y() <= position.y) && (self.get_y() + self.get_height() >= position.y);
         overlaps_x && overlaps_y
     }
     
 
-    fn is_clicked(&self, position: &Position, events: &mut Vec<Event>) -> bool{ 
+    fn is_clicked(&self, position: &Position, events: &mut Vec<T>) -> bool{ 
         self.default_click_condition(position, events)
     }
 

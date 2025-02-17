@@ -3,7 +3,7 @@ use macroquad::shapes::draw_rectangle;
 use macroquad::window::{screen_height, screen_width};
 
 use crate::enums::board_status::BoardStatus;
-use crate::enums::event::Event;
+use crate::enums::event::SceneEvent;
 use crate::traits::game_object::GameObject;
 use crate::models::position::Position;
 
@@ -95,14 +95,14 @@ impl Board {
     }
 }
 
-impl GameObject for Board {
+impl GameObject<SceneEvent> for Board {
     fn set_status(&mut self, status: BoardStatus) {
         self.status = status;
     }
 
     fn get_status(&self) -> &BoardStatus { &self.status }
 
-    fn click_action(&mut self, position: &Position, events: &mut Vec<Event>) {
+    fn click_action(&mut self, position: &Position, events: &mut Vec<SceneEvent>) {
         for row in self.map.iter_mut() {
             let mut clicked = false;
 
