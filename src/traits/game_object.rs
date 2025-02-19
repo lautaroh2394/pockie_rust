@@ -1,8 +1,11 @@
-use crate::{enums::{board_status::BoardStatus, event::SceneEvent}, models::position::Position};
+use crate::{enums::board_status::BoardStatus, models::position::Position};
 
 pub trait GameObject<T> {
     fn draw(&self);
     fn click_action(&mut self, position: &Position, events: &mut Vec<T>);
+    fn get_name(&self) -> String {
+        String::from("Nombre sin definir")
+    }
     fn get_pos(&self) -> &Position;
 
     fn get_x(&self) -> f32 {

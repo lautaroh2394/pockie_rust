@@ -1,4 +1,4 @@
-use crate::models::space::Space;
+use crate::models::{fighter::Fighter, space::Space};
 
 
 pub enum BoardEvent {
@@ -9,6 +9,6 @@ pub enum BoardEvent {
 }
 
 pub enum SceneEvent {
-    CreateModal,
+    CreateModal(Fighter),
     BoardEvent(BoardEvent),
 }

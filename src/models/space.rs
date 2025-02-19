@@ -1,21 +1,21 @@
 use macroquad::{color::{GREEN, PURPLE, WHITE, YELLOW}, shapes::draw_rectangle};
 
 use crate::{
-    enums::event::{
-        BoardEvent, 
-        SceneEvent
-    }, 
+    enums::event::SceneEvent, 
     models::position::Position, 
     traits::game_object::GameObject
 };
 
-const SPACE_PAD: f32 = 10.0;
+use super::fighter::Fighter;
+
+pub const SPACE_PAD: f32 = 10.0; // todo. move to other file? set as Space::SPACE_PAD ?
 
 pub struct Space {
     pub position: Position,
     pub toggled: bool,
     pub x_index: i32,
-    pub y_index: i32
+    pub y_index: i32,
+    pub fighter: Option<Fighter>,
 }
 
 impl Space {
@@ -25,6 +25,7 @@ impl Space {
             toggled: self.toggled,
             x_index: self.x_index,
             y_index: self.y_index,
+            fighter: None,
         }
     }
     pub fn new(x: f32, y: f32, w: f32, h: f32, x_index: i32, y_index: i32) -> Space {
@@ -33,6 +34,7 @@ impl Space {
             toggled: false,
             x_index,
             y_index,
+            fighter: None
         }
     }
 
@@ -55,14 +57,20 @@ impl Space {
             self.get_x() + SPACE_PAD,
             self.get_y() + SPACE_PAD,
             self.get_width() - SPACE_PAD * 2.0,
-            self.get_height() - SPACE_PAD * 2.0, PURPLE);   
+            self.get_height() - SPACE_PAD * 2.0, PURPLE
+        );
+
+        if let Some(f) = &self.fighter {
+            f.draw();
+        }
     }
 }
 
 
 impl GameObject<SceneEvent> for Space {
     // todo: events should be "scene_events"?
-    fn click_action(&mut self, _: &Position, events: &mut Vec<SceneEvent>){
+    fn click_action(&mut self, position: &Position, events: &mut Vec<SceneEvent>){
+        /*
         self.toggled = !self.toggled;
         events.push(
             SceneEvent::CreateModal
@@ -72,6 +80,10 @@ impl GameObject<SceneEvent> for Space {
             )
              */
         );
+         */
+        if let Some(f) = &mut self.fighter {
+            f.click(position, events);
+        }
     }
 
     fn default_click_condition(&self, position: &Position, _: &mut Vec<SceneEvent>) -> bool {
@@ -96,7 +108,12 @@ impl GameObject<SceneEvent> for Space {
             self.get_x() + SPACE_PAD,
             self.get_y() + SPACE_PAD,
             self.get_width() - SPACE_PAD * 2.0,
-            self.get_height() - SPACE_PAD * 2.0, color);   
+            self.get_height() - SPACE_PAD * 2.0, color
+        );   
+
+        if let Some(f) = &self.fighter {
+            f.draw();
+        }
     }
     
     fn get_pos(&self) -> &Position {

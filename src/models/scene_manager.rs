@@ -1,10 +1,13 @@
 use crate::models::{
     scene::Scene,
     board::Board,
-    position::Position
+    position::Position,
+    
 };
-use crate::enums::event::{SceneEvent};
+use crate::enums::event::SceneEvent;
 use crate::traits::game_object::GameObject;
+
+use super::fighter::Fighter;
 
 pub struct SceneManager {
     scenes: Vec<Scene>,
@@ -14,7 +17,10 @@ pub struct SceneManager {
 impl SceneManager {
     pub fn new_testing_scene(&mut self){
         let mut scene: Scene = Scene::new();
-        let board: Board = Board::default();
+        let mut board: Board = Board::default();
+        let s = &mut board.map[0][3];
+        s.fighter = Some(Fighter::new(s.position.clone(), "prueba".to_string()));
+
         scene.push(Box::new(board));
         self.push_scene(scene);
         
@@ -35,8 +41,8 @@ impl SceneManager {
         
         for event in self.events.iter() {
             match event {
-                SceneEvent::CreateModal => {
-                    self.scenes.push(Scene::new_modal());
+                SceneEvent::CreateModal(f) => {
+                    self.scenes.push(Scene::new_modal(f.clone()));
                 },
                 _ => ()
             }
@@ -48,6 +54,9 @@ impl SceneManager {
 impl SceneManager {
     pub fn draw(&self) {
         let scene = self.scenes.last().unwrap();
+        if scene.is_modal() { 
+            self.scenes[self.scenes.len() - 2].draw();
+        }
         scene.draw();
     }
 

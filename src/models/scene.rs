@@ -7,12 +7,16 @@ use crate::{
             BoardEvent, SceneEvent
         }
     }, models::{
-        board::Board, position::Position
+        board::Board, 
+        position::Position,
+        fighter::Fighter, 
+        render_logic::{
+            modal::ModalSceneRenderLogic,
+            default::DefaultSceneRenderLogic,
+        },
     }, traits::{
         game_object::GameObject, 
-        render_logic::{
-            DefaultSceneRenderLogic, ModalSceneRenderLogic, RenderLogic
-        }
+        render_logic::RenderLogic,
     }
 };
 
@@ -38,17 +42,18 @@ impl Scene {
         }
     }
 
-    pub fn new_modal() -> Self {
+    pub fn new_modal(fighter: Fighter) -> Self {
         let x = 0.0;
         let y = 0.0;
         let h = screen_height();
         let w = screen_width();
         let p = Position {x, y, w, h};
+
         Scene {
             elements: Vec::new(),
             events: Vec::new(),
             position: p,
-            renderer: Box::new(ModalSceneRenderLogic {})
+            renderer: Box::new(ModalSceneRenderLogic { fighter: fighter})
         }
     }
     
@@ -69,14 +74,16 @@ impl Scene {
                 SceneEvent::BoardEvent(BoardEvent::BoardSelectMove(space)) => {
                     self.elements[0].set_status(BoardStatus::SELECTING_MOVE(Some(space.clone())));
                 },
-                SceneEvent::CreateModal => {
-                    events.push(SceneEvent::CreateModal);
+                SceneEvent::CreateModal(f) => {
+                    events.push(SceneEvent::CreateModal(f.clone()));
                 }
                 _ => {}
             }
         }
         self.events = Vec::new();
     }
+
+    pub fn is_modal(&self) -> bool { self.renderer.is_modal() }
 }
 
 impl GameObject<SceneEvent> for Scene {
