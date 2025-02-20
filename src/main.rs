@@ -1,6 +1,7 @@
 use macroquad::prelude::*;
 mod window_conf;
 mod models;
+mod render_logic;
 mod enums;
 mod traits;
 use models::scene_manager::SceneManager;

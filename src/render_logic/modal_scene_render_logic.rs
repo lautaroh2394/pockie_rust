@@ -1,14 +1,14 @@
 use macroquad::{math::Vec2, ui::{hash, root_ui, Ui}};
 
 use crate::{
-    models::{fighter::Fighter, scene::Scene}, 
+    models::{fighter::Fighter, scenes::scene::Scene}, 
     traits::{game_object::GameObject, render_logic::RenderLogic}
 };
 
 pub struct ModalSceneRenderLogic { pub fighter: Fighter }
 impl RenderLogic<Scene> for ModalSceneRenderLogic {
     fn is_modal(&self) -> bool { true }
-    
+
     fn render(&self, _scene: &Scene){
         let _ = _scene;
         root_ui().window(
@@ -20,7 +20,6 @@ impl RenderLogic<Scene> for ModalSceneRenderLogic {
 
                     let mut owned_string: String = "hello ".to_owned();
                     let borrowed_string: &str = "world";
-                    
                     owned_string.push_str(borrowed_string);
 
                     let mut atk_full_desc: String = "atk ".to_string();

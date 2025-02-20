@@ -21,30 +21,14 @@ pub struct Board {
 }
 
 impl Board {    
-    pub fn toggle_status(board_status: &BoardStatus, space: &Space) -> Option<BoardStatus> {
-        // todo: maybe should not receive space as it is contained in board status?
-
-        let space_clone = space.clone();
+    pub fn toggle_status(board_status: &BoardStatus, new_space: &Space) -> Option<BoardStatus> {
+        let new_space_clone = Some(new_space.clone());
         match board_status {
-            BoardStatus::IDLE(None) => {
-                Some(
-                    BoardStatus::SELECTING_MOVE(Some(space_clone))
-                )
+            BoardStatus::IDLE(_) => {
+                Some(BoardStatus::SELECTING_MOVE(new_space_clone))
             },
-            BoardStatus::IDLE(Some(_)) => {
-                Some(
-                    BoardStatus::SELECTING_MOVE(Some(space_clone))
-                )
-            },
-            BoardStatus::SELECTING_MOVE(Some(_)) => {
-                Some(
-                    BoardStatus::IDLE(Some(space_clone))
-                )
-            },
-            BoardStatus::SELECTING_MOVE(None) => {
-                Some(
-                    BoardStatus::IDLE(Some(space_clone))
-                )
+            BoardStatus::SELECTING_MOVE(_) => {
+                Some(BoardStatus::IDLE(new_space_clone))
             },
             _ => None            
         }

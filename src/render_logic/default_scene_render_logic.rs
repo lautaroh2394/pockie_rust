@@ -1,4 +1,4 @@
-use crate::{models::scene::Scene, traits::render_logic::RenderLogic};
+use crate::{models::scenes::scene::Scene, traits::render_logic::RenderLogic};
 
 pub struct DefaultSceneRenderLogic {}
 impl RenderLogic<Scene> for DefaultSceneRenderLogic {
