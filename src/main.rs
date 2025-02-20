@@ -29,7 +29,7 @@ async fn main() {
             manager.click(x, y);
         }
 
-        draw_text(&(get_fps().to_string()), 20.0, 20.0, 30.0, WHITE);
+        draw_text(&(get_fps().to_string()), 20., 20., 30., WHITE);
         next_frame().await
     }
 }

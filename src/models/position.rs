@@ -18,8 +18,8 @@ impl Position {
     }
 
     pub fn default() -> Self {
-        let x = 0.0;
-        let y = 0.0;
+        let x = 0.;
+        let y = 0.;
         let h = screen_height();
         let w = screen_width();
         Position {x, y, w, h}

@@ -46,8 +46,8 @@ impl Board {
         let space_width = board_width / total_columns as f32;
         let space_height = board_height as f32 / total_rows as f32;
 
-        let board_init_x = (screen_width() - board_width) / 2.0;
-        let board_init_y = (screen_height() - board_height)/ 4.0;
+        let board_init_x = (screen_width() - board_width) / 2.;
+        let board_init_y = (screen_height() - board_height)/ 4.;
 
         for row in 0..total_rows {
             let mut new_row = Vec::new();

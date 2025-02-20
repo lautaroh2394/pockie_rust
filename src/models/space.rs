@@ -8,7 +8,7 @@ use crate::{
 
 use super::fighter::Fighter;
 
-pub const SPACE_PAD: f32 = 10.0; // todo. move to other file? set as Space::SPACE_PAD ?
+pub const SPACE_PAD: f32 = 10.; // todo. move to other file? set as Space::SPACE_PAD ?
 
 pub struct Space {
     pub position: Position,
@@ -56,8 +56,8 @@ impl Space {
         draw_rectangle(
             self.get_x() + SPACE_PAD,
             self.get_y() + SPACE_PAD,
-            self.get_width() - SPACE_PAD * 2.0,
-            self.get_height() - SPACE_PAD * 2.0, PURPLE
+            self.get_width() - SPACE_PAD * 2.,
+            self.get_height() - SPACE_PAD * 2., PURPLE
         );
 
         if let Some(f) = &self.fighter {
@@ -107,8 +107,8 @@ impl GameObject<SceneEvent> for Space {
         draw_rectangle(
             self.get_x() + SPACE_PAD,
             self.get_y() + SPACE_PAD,
-            self.get_width() - SPACE_PAD * 2.0,
-            self.get_height() - SPACE_PAD * 2.0, color
+            self.get_width() - SPACE_PAD * 2.,
+            self.get_height() - SPACE_PAD * 2., color
         );   
 
         if let Some(f) = &self.fighter {

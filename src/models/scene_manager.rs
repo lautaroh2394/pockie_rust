@@ -63,7 +63,7 @@ impl SceneManager {
 
     pub fn click(&mut self, x: f32, y: f32) {
        let scene = self.scenes.last_mut().unwrap();
-       let position = Position { x, y, w:0.0, h:0.0};
+       let position = Position { x, y, w:0., h:0.};
        scene.click(&position, &mut self.events);
     }
 

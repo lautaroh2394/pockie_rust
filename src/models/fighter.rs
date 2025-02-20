@@ -37,7 +37,7 @@ impl Fighter {
     pub fn get_atk(&self) -> i32 { self.attack }
     pub fn get_def(&self) -> i32 { self.defense }
     pub fn get_movement(&self) -> i32 { self.movement }
-    
+
 }
 impl GameObject<SceneEvent> for Fighter {
     fn get_name(&self) -> String {
@@ -46,10 +46,10 @@ impl GameObject<SceneEvent> for Fighter {
 
     fn draw(&self) {
         draw_rectangle(
-            self.get_x() + (self.get_width() / 4.0), 
-            self.get_y() + self.get_height() / 4.0,
-            self.get_width() /2.0,
-            self.get_height() /2.0,
+            self.get_x() + (self.get_width() / 4.), 
+            self.get_y() + self.get_height() / 4.,
+            self.get_width() /2.,
+            self.get_height() /2.,
             PINK
         )
     }

@@ -11,10 +11,12 @@ impl RenderLogic<Scene> for ModalSceneRenderLogic {
 
     fn render(&self, _scene: &Scene){
         let _ = _scene;
+        let x = self.fighter.get_pos().x + self.fighter.get_pos().w - 15.;
+        let y = self.fighter.get_pos().y + 15.;
         root_ui().window(
             hash!(),
-            Vec2::new(100.0, 100.0),
-            Vec2::new(200.0, 500.0),
+            Vec2::new(x, y),
+            Vec2::new(150., 250.),
             |ui: &mut Ui| {
                     ui.label(None, self.fighter.get_name().as_str());
 
