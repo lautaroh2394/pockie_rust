@@ -12,18 +12,33 @@ pub struct CharacterMenu {
 
 impl CharacterMenu {
     pub fn new_for_fighter(fighter: &Fighter) -> Self {
+        let mut pos = fighter.get_pos().clone();
+        pos.x += 50.;
+        pos.y += 50.;
+
+        let mut buttons: Vec<Button> = Vec::new();
+        buttons.push(Button::new(pos.clone(), String::from("attack")));
+
         CharacterMenu {
-            position: fighter.get_pos().clone(),
-            options: vec![
-                Button::new(fighter.get_pos().clone(), String::from("attack")),
-            ]
+            position: pos,
+            options: buttons,
         }
     }
 }
 
 impl GameObject<SceneEvent> for CharacterMenu {
     fn draw(&self){
-        draw_rectangle(self.get_x(), self.get_y(),  self.get_width(), self.get_height(), GRAY);
+        draw_rectangle(
+            self.get_x() + 50., 
+            self.get_y() + 50.,  
+            self.get_width(), 
+            self.get_height(),
+             GRAY
+        );
+
+        for button in self.options.iter() {
+            button.draw();
+        }
     }
 
     fn click_action(&mut self, _: &Position, _: &mut Vec<SceneEvent>){

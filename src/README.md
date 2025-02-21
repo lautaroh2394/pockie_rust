@@ -1,6 +1,10 @@
 todos:
-- definir el modelo de eventos y renderizado
+- definir el modelo de eventos y renderizado. hoy hay un solo tipo de eventos y muchos terminan siendo pasados de la escena al manager
 - armar menu y botones (no podría usar el ui de macroquad a menos que modifique el modelo de renderizado y eventos)
+  - cuando se crean menus y botones reciben una posicion, deben:
+    - opcion 1: referenciar esa posicion y al dibujarse calcular el offset y demas (para que se dibuje el rectangulo del boton donde corresponda dentro del rect del menu)
+    - opcion 2: referenciar esa posicion y crear una nueva con el offset ya calculado y guardar esa nueva posicion
+    - opcion 3: los botones ya reciben su posicion, calculada por el menu
 - move fighter
 - fix modal: for certain spaces it will not draw inside scene
 - refactor: Position -> maybe reuse Size and Position from macroquad

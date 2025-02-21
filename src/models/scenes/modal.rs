@@ -20,7 +20,7 @@ impl Modal {
         elements.push(Box::new(CharacterMenu::new_for_fighter(&fighter)));
         Scene::new_from_data( SceneCreationData {
             position: Some(Position::default()),
-            renderer: Some(Box::new(ModalSceneRenderLogic { fighter })),
+            renderer: Some(Box::new(ModalSceneRenderLogic { _fighter: fighter })),
             elements: Some(elements),
             events: None
         })
