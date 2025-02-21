@@ -1,5 +1,4 @@
 use macroquad::{math::Vec2, ui::{hash, root_ui, Ui}};
-
 use crate::{
     models::{fighter::Fighter, scenes::scene::Scene}, 
     traits::{game_object::GameObject, render_logic::RenderLogic}
@@ -9,17 +8,23 @@ pub struct ModalSceneRenderLogic { pub fighter: Fighter }
 impl RenderLogic<Scene> for ModalSceneRenderLogic {
     fn is_modal(&self) -> bool { true }
 
-    fn render(&self, _scene: &Scene){
-        let _ = _scene;
+    fn render(&self, scene: &Scene){
+        for element in scene.elements.iter() {
+            element.draw();
+        }
+        /*
         let x = self.fighter.get_pos().x + self.fighter.get_pos().w - 15.;
         let y = self.fighter.get_pos().y + 15.;
+
         root_ui().window(
             hash!(),
             Vec2::new(x, y),
             Vec2::new(150., 250.),
             |ui: &mut Ui| {
                     ui.label(None, self.fighter.get_name().as_str());
-
+                    if ui.button(None, "click me") {
+                        println!("hi");
+                    }
                     let mut owned_string: String = "hello ".to_owned();
                     let borrowed_string: &str = "world";
                     owned_string.push_str(borrowed_string);
@@ -44,5 +49,6 @@ impl RenderLogic<Scene> for ModalSceneRenderLogic {
                     ui.label(None, &mv_full_desc);
             }
         );
+         */
     }
 }

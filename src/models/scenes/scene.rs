@@ -62,6 +62,9 @@ impl Scene {
                 },
                 SceneEvent::CreateModal(f) => {
                     events.push(SceneEvent::CreateModal(f.clone()));
+                },
+                SceneEvent::PopLast => {
+                    events.push(SceneEvent::PopLast);
                 }
                 _ => {}
             }

@@ -45,6 +45,9 @@ impl SceneManager {
                 SceneEvent::CreateModal(f) => {
                     self.scenes.push(Modal::new(f.clone()));
                 },
+                SceneEvent::PopLast => {
+                    self.scenes.pop();
+                },
                 _ => ()
             }
         }

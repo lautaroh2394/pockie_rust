@@ -11,4 +11,5 @@ pub enum BoardEvent {
 pub enum SceneEvent {
     CreateModal(Fighter),
     BoardEvent(BoardEvent),
+    PopLast,
 }
