@@ -5,6 +5,7 @@ use crate::{
     traits::game_object::GameObject,
     models::position::Position};
 
+#[derive(Clone)]
 pub struct Fighter {
     position: Position,
     attack: i32,

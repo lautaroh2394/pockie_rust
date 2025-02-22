@@ -47,6 +47,7 @@ impl Scene {
         self.elements.push(element);
     }
 
+    /*
     pub fn manage_events(&mut self, events: &mut Vec<SceneEvent>){
         for event in self.events.iter() {
             match event {
@@ -71,6 +72,7 @@ impl Scene {
         }
         self.events = Vec::new();
     }
+    */
 
     pub fn is_modal(&self) -> bool { self.renderer.is_modal() }
 }
@@ -88,5 +90,24 @@ impl GameObject<SceneEvent> for Scene {
 
     fn get_pos(&self) -> &Position {
         &self.position
+    }
+    
+    fn manage_events(&mut self, events: &mut Vec<SceneEvent>){
+        for event in self.events.iter() {
+            match event {
+                SceneEvent::BoardEvent(BoardEvent::BoardToggleIdleMove(space)) => {
+                    let status = self.elements[0].get_status();
+                    let status = Board::toggle_status(status, &space);
+                    if let Some(s) = status {
+                        self.elements[0].set_status(s);
+                    }
+                },
+                SceneEvent::BoardEvent(BoardEvent::BoardSelectMove(space)) => {
+                    self.elements[0].set_status(BoardStatus::SELECTING_MOVE(Some(space.clone())));
+                },
+                _ => {events.push(event.clone());}
+            }
+        }
+        self.events = Vec::new();
     }
 }

@@ -1,5 +1,6 @@
 use macroquad::window::{screen_height, screen_width};
 
+#[derive(Clone)]
 pub struct Position {
     pub x: f32,
     pub y: f32,

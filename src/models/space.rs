@@ -10,6 +10,7 @@ use super::fighter::Fighter;
 
 pub const SPACE_PAD: f32 = 10.; // todo. move to other file? set as Space::SPACE_PAD ?
 
+#[derive(Clone)]
 pub struct Space {
     pub position: Position,
     pub toggled: bool,
@@ -70,23 +71,12 @@ impl Space {
 impl GameObject<SceneEvent> for Space {
     // todo: events should be "scene_events"?
     fn click_action(&mut self, position: &Position, events: &mut Vec<SceneEvent>){
-        /*
-        self.toggled = !self.toggled;
-        events.push(
-            SceneEvent::CreateModal
-            /*
-            SceneEvent::BoardEvent(
-                BoardEvent::BoardToggleIdleMove(self.clone())
-            )
-             */
-        );
-         */
         if let Some(f) = &mut self.fighter {
             f.click(position, events);
         }
     }
 
-    fn default_click_condition(&self, position: &Position, _: &mut Vec<SceneEvent>) -> bool {
+    fn default_click_condition(&self, position: &Position) -> bool {
         let overlaps_x = (self.get_x() + SPACE_PAD <= position.x) && (self.get_x() + self.get_width() - SPACE_PAD >= position.x);
         let overlaps_y = (self.get_y() + SPACE_PAD <= position.y) && (self.get_y() + self.get_height() - SPACE_PAD >= position.y);
         overlaps_x && overlaps_y
