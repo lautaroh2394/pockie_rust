@@ -16,21 +16,40 @@ impl CharacterMenu {
         pos.x += 50.;
         pos.y += 50.;
 
-        let mut buttons: Vec<Button> = Vec::new();
-        buttons.push(Button::new(pos.clone(), String::from("attack")));
-
-        CharacterMenu {
+        let mut m = CharacterMenu {
             position: pos,
-            options: buttons,
-        }
+            options: Vec::new(),
+        };
+
+        m.add_options(vec![
+            String::from("Attack"),
+        ]);
+        m
     }
+
+    pub fn add_options(&mut self, options_config: Vec<String>) {
+        let mut option_height = ((self.get_height() - (10. * 2.)) / options_config.len() as f32) % 30.;
+        let option_width = (self.get_height() - (5. * 2.));
+        let x = self.get_x() + 10.;
+
+        for (i, option_title) in options_config.iter().enumerate() {
+            self.options.push(Button::new(Position {
+                x,
+                w: option_width,
+                h: option_height,
+                y: self.get_y() + 10. + (5. * i as f32)
+            }, String::from(option_title)))
+        }
+
+
+    } 
 }
 
 impl GameObject<SceneEvent> for CharacterMenu {
     fn draw(&self){
         draw_rectangle(
-            self.get_x() + 50., 
-            self.get_y() + 50.,  
+            self.get_x(), 
+            self.get_y(),  
             self.get_width(), 
             self.get_height(),
              GRAY
@@ -41,8 +60,10 @@ impl GameObject<SceneEvent> for CharacterMenu {
         }
     }
 
-    fn click_action(&mut self, _: &Position, _: &mut Vec<SceneEvent>){
-        // todo - handle options
+    fn click_action(&mut self, position: &Position, events: &mut Vec<SceneEvent>){
+        for option in self.options.iter_mut() {
+            option.click(position, events);
+        }
     }
     
     fn get_pos(&self) -> &Position {
