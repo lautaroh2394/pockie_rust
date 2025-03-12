@@ -65,10 +65,17 @@ impl Space {
             f.draw();
         }
     }
+    pub fn set_fighter(&mut self, fighter: Fighter) {
+        self.fighter = Some(fighter);
+    }
+
+    pub fn drop_fighter(&mut self) {
+        self.fighter = None
+    }
 }
 
 
-impl GameObject<SceneEvent> for Space {
+impl GameObject for Space {
     // todo: events should be "scene_events"?
     fn click_action(&mut self, position: &Position, events: &mut Vec<SceneEvent>){
         if let Some(f) = &mut self.fighter {

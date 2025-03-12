@@ -6,6 +6,7 @@ todos:
     - opcion 2: referenciar esa posicion y crear una nueva con el offset ya calculado y guardar esa nueva posicion
     - opcion 3: los botones ya reciben su posicion, calculada por el menu
 - move fighter
+- que el board maneje su estado a traves de sus eventos
 - fix modal: for certain spaces it will not draw inside scene
 - refactor: Position -> maybe reuse Size and Position from macroquad
 - al crear el modal debe ser donde se clickeó

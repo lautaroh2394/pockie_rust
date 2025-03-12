@@ -2,8 +2,8 @@ use macroquad::color::GRAY;
 use macroquad::shapes::draw_rectangle;
 use macroquad::window::{screen_height, screen_width};
 
-use crate::enums::board_status::BoardStatus;
-use crate::enums::event::SceneEvent;
+use crate::enums::board_status::BoardState;
+use crate::enums::event::{BoardEvent, SceneEvent};
 use crate::traits::game_object::GameObject;
 use crate::models::position::Position;
 
@@ -17,18 +17,20 @@ pub struct Board {
     pub _rows: i32,
     pub map: Vec<Vec<Space>>,
     pub position: Position,
-    pub status: BoardStatus,
+    pub state: BoardState,
 }
 
 impl Board {    
-    pub fn toggle_status(board_status: &BoardStatus, new_space: &Space) -> Option<BoardStatus> {
+    pub fn toggle_status(board_status: &BoardState, new_space: &Space) -> Option<BoardState> {
         let new_space_clone = Some(new_space.clone());
         match board_status {
+            /*
             BoardStatus::IDLE(_) => {
                 Some(BoardStatus::SELECTING_MOVE(new_space_clone))
             },
-            BoardStatus::SELECTING_MOVE(_) => {
-                Some(BoardStatus::IDLE(new_space_clone))
+            */
+            BoardState::SelectingMove(_) => {
+                Some(BoardState::Idle)
             },
             _ => None            
         }
@@ -38,6 +40,7 @@ impl Board {
     pub fn default() -> Board {
         Board::new(DEFAULT_COLUMNS, DEFAULT_ROWS)
     }
+
     pub fn new(total_columns: i32, total_rows: i32) -> Board {
         let mut map = Vec::new();
 
@@ -74,27 +77,48 @@ impl Board {
                 h: board_height
             },
             map,
-            status: BoardStatus::IDLE(None),
+            state: BoardState::Idle,
         }
     }
 }
 
-impl GameObject<SceneEvent> for Board {
-    fn set_status(&mut self, status: BoardStatus) {
-        self.status = status;
+impl GameObject for Board {
+    fn set_status(&mut self, state: BoardState) {
+        self.state = state;
     }
 
-    fn get_status(&self) -> &BoardStatus { &self.status }
+    fn get_status(&self) -> &BoardState { &self.state }
 
     fn click_action(&mut self, position: &Position, events: &mut Vec<SceneEvent>) {
         for row in self.map.iter_mut() {
             let mut clicked = false;
 
-            for space in row {
-                if space.click(&position, events) {
-                    clicked = true;
-                    break; // No need to check the rest
-                }
+            /* Click action should be according to state */
+            match &self.state {
+                BoardState::Idle => {
+                    for space in row {
+                        if space.click(&position, events) {
+                            clicked = true;
+                            break; // No need to check the rest
+                        }
+                    }
+                },
+                BoardState::SelectingMove(fighter_option) => {
+                    if let Some(fighter) = fighter_option {
+                        for space in row {
+                            if space.is_clicked(&position) && space.fighter.is_none() && fighter.can_move_to(space) {
+                                events.push(SceneEvent::BoardEvent(BoardEvent::DropFighter(fighter.clone())));
+                                let mut f = fighter.clone();
+                                f.update_map_position(&space);
+                                events.push(SceneEvent::BoardEvent(BoardEvent::SetFighter(f)));
+                                events.push(SceneEvent::BoardEvent(BoardEvent::BoardIdle));
+                                clicked = true;
+                                break; // No need to check the rest
+                            }
+                        }
+                    }
+                },
+                _ => ()
             }
 
             if clicked { break }
@@ -105,15 +129,67 @@ impl GameObject<SceneEvent> for Board {
         &self.position
     }
 
+    fn manage_events(&mut self, events: &mut Vec<SceneEvent>) {
+        let mut board_events = Vec::new();
+        let mut new_events = Vec::<SceneEvent>::new();
+
+        events.iter().for_each(|ev| {
+            match ev {
+                SceneEvent::BoardEvent(board_event) => {
+                    board_events.push(board_event.clone());
+                },
+                ev => {
+                    new_events.push(ev.clone());
+                }
+            }
+        });
+        
+        events.clear();
+        for ev in new_events.iter_mut() {
+            events.push(ev.clone());
+        }
+
+        board_events.iter().for_each(|board_event| {
+            match board_event {
+                BoardEvent::BoardToggleIdleMove(space) => {
+                    let status = self.get_status();
+                    let status = Board::toggle_status(status, &space);
+                    if let Some(s) = status {
+                        self.set_status(s);
+                    }
+                },
+                BoardEvent::BoardSelectMove(fighter) => {
+                    println!("board select move");
+                    self.set_status(BoardState::SelectingMove(Some(fighter.clone())));
+                    events.push(SceneEvent::PopLast);
+                },
+                BoardEvent::BoardIdle => {
+                    println!("board SET IDLE");
+                    self.set_status(BoardState::Idle);
+                },
+                BoardEvent::DropFighter(fighter) => {
+                    let fighter_current_space = &mut self.map[fighter.y_index as usize][fighter.x_index as usize]; 
+                    fighter_current_space.drop_fighter();
+                },
+                BoardEvent::SetFighter(fighter) => {
+                    let fighter_current_space = &mut self.map[fighter.y_index as usize][fighter.x_index as usize]; 
+                    fighter_current_space.set_fighter(fighter.clone());
+                },
+                _ => ()
+            }
+        });
+    }
+
     fn draw(&self){
         draw_rectangle(self.get_x(), self.get_y(),  self.get_width(), self.get_height(), GRAY);
 
-        match &self.status {
-            BoardStatus::SELECTING_MOVE(space_to_move) => {
-                if let Some(e) = space_to_move {
+        match &self.state {
+            BoardState::SelectingMove(fighter) => {
+                if let Some(e) = fighter {
+                    let container_space = &self.map[e.y_index as usize][e.x_index as usize];
                     for row in self.map.iter() {
                         for space in row {
-                            if space.near(e) {
+                            if space.near(&container_space) {
                                 space.draw_selectable();
                             }
                             else {

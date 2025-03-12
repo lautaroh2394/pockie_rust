@@ -20,11 +20,12 @@ impl SceneManager {
         let mut scene: Scene = Scene::default();
         let mut board: Board = Board::default();
         let s = &mut board.map[0][3];
-        s.fighter = Some(Fighter::new(s.position.clone(), "prueba".to_string()));
+        s.fighter = Some(Fighter::new(s.position.clone(), "prueba".to_string(), s));
 
+        let s = &mut board.map[4][1];
+        s.fighter = Some(Fighter::new(s.position.clone(), "prueba".to_string(), s));
         scene.push(Box::new(board));
         self.push_scene(scene);
-        
     }
 
     pub fn new() -> SceneManager{

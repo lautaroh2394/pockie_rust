@@ -7,7 +7,7 @@ use super::buttons::{button::Button, move_button::MoveButton};
 pub struct CharacterMenu {
     position: Position,
     options: Vec<Button>,
-
+    fighter: Fighter,
 }
 
 impl CharacterMenu {
@@ -25,6 +25,7 @@ impl CharacterMenu {
         let mut m = CharacterMenu {
             position: pos,
             options: Vec::new(),
+            fighter: fighter.clone()
         };
         
         m.add_options(options);
@@ -46,6 +47,7 @@ impl CharacterMenu {
                         h: option_height,
                         y: self.get_y() + 10. + (5. * i as f32)
                     },
+                    self.fighter.clone()
             ))
         }
 
@@ -53,7 +55,7 @@ impl CharacterMenu {
     } 
 }
 
-impl GameObject<SceneEvent> for CharacterMenu {
+impl GameObject for CharacterMenu {
     fn draw(&self){
         draw_rectangle(
             self.get_x(), 

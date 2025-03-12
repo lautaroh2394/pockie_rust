@@ -1,11 +1,12 @@
 use macroquad::{color::{BLACK, WHITE}, shapes::draw_rectangle, text::draw_text};
 
-use crate::{enums::event::SceneEvent, models::position::{self, Position}, traits::game_object::GameObject};
+use crate::{enums::event::SceneEvent, models::position::Position, traits::game_object::GameObject};
 
 pub struct Button {
     position: Position,
     text: String,
     action: Box<dyn ButtonAction>
+    
 }
 
 pub trait ButtonAction {
@@ -17,12 +18,12 @@ impl Button {
         Button {
             position: p,
             text: t,
-            action,
+            action
         }
     }
 }
 
-impl GameObject<SceneEvent> for Button {
+impl GameObject for Button {
     fn draw(&self) {
         draw_rectangle(
             self.get_x(), 

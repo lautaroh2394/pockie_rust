@@ -1,7 +1,7 @@
-use crate::models::space::Space;
+use crate::models::{fighter::Fighter, space::Space};
 
-pub enum BoardStatus {
-    IDLE(Option<Space>),
-    SELECTING_MOVE(Option<Space>),
-    SELECTING_VICTIM(Option<Space>),
+pub enum BoardState {
+    Idle,
+    SelectingMove(Option<Fighter>),
+    SelectingVictim(Option<Space>),
 }

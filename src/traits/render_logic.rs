@@ -1,6 +1,6 @@
-use crate::{enums::event::SceneEvent, traits::game_object::GameObject};
+use crate::traits::game_object::GameObject;
 
-pub trait RenderLogic<T: GameObject<SceneEvent>> {
+pub trait RenderLogic<T: GameObject> {
     fn render(&self, object: &T){
         object.draw();
     }

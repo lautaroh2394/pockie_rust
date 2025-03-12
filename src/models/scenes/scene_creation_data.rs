@@ -8,7 +8,7 @@ use crate::{
 use super::scene::Scene;
 
 pub struct SceneCreationData {
-    pub elements: Option<Vec<Box<dyn GameObject<SceneEvent>>>>,
+    pub elements: Option<Vec<Box<dyn GameObject>>>,
     pub events: Option<Vec<SceneEvent>>,
     pub position: Option<Position>,
     pub renderer: Option<Box<dyn RenderLogic<Scene>>>,
