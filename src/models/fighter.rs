@@ -1,4 +1,4 @@
-use macroquad::{color::PINK, shapes::draw_rectangle};
+use macroquad::{color::{GREEN, PINK, RED}, shapes::draw_rectangle};
 
 use crate::{
     enums::event::SceneEvent, models::position::Position, traits::game_object::GameObject};
@@ -11,6 +11,8 @@ pub struct Fighter {
     attack: i32,
     defense: i32,
     movement: i32,
+    pub hp: i32,
+    max_hp: i32,
     name: String,
     pub x_index: i32,
     pub y_index: i32,
@@ -23,6 +25,8 @@ impl Fighter {
             attack: 5,
             defense: 3,
             movement: 2,
+            hp: 10,
+            max_hp: 10,
             name: name,
             x_index: space.x_index,
             y_index: space.y_index
@@ -35,6 +39,8 @@ impl Fighter {
             attack: self.attack,
             defense: self.defense,
             movement: self.movement,
+            hp: self.hp,
+            max_hp: 10,
             name: self.name.to_string(),
             x_index: self.x_index,
             y_index: self.y_index
@@ -57,6 +63,25 @@ impl Fighter {
         horizontal + vertical <= 2
     }
 
+    pub fn can_attack_to(&self, space: &Space) -> bool {
+        let horizontal = (space.x_index - self.x_index).abs();
+        let vertical = (space.y_index - self.y_index).abs();
+        horizontal + vertical <= 3
+    }
+
+    pub fn attack(&self, fighter: &mut Fighter) {
+        fighter.be_attacked_by(self);
+    }
+
+    pub fn be_attacked_by(&mut self, fighter: &Fighter) {
+        self.hp -= fighter.get_atk();
+        if self.hp < 0 {self.hp = 0;}
+    }
+
+    pub fn is_dead(&self) -> bool {
+        self.hp <= 0
+    }
+
 }
 impl GameObject for Fighter {
     fn get_name(&self) -> String {
@@ -64,13 +89,17 @@ impl GameObject for Fighter {
     }
 
     fn draw(&self) {
-        draw_rectangle(
-            self.get_x() + (self.get_width() / 4.), 
-            self.get_y() + self.get_height() / 4.,
-            self.get_width() /2.,
-            self.get_height() /2.,
-            PINK
-        )
+        let x = self.get_x() + self.get_width() / 4.;
+        let y = self.get_y() + self.get_height() / 4.;
+        let w = self.get_width() /2.;
+        let h = self.get_height() /2.;
+        // fighter
+        draw_rectangle(x, y, w, h, PINK);
+
+        //hp bar
+        draw_rectangle(x, y, w, 10., RED);
+        let green_w = w * (self.hp as f32 / self.max_hp as f32);
+        draw_rectangle(x, y, green_w, 10., GREEN);
     }
 
     fn get_pos(&self) -> &Position {

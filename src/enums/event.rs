@@ -4,12 +4,14 @@ use crate::models::{fighter::Fighter, space::Space};
 #[derive(Clone)]
 pub enum BoardEvent {
     BoardIdle,
-    BoardSelectVictim,
+    BoardSelectVictim(Fighter),
     BoardSelectMove(Fighter),
     DropFighter(Fighter),
     SetFighter(Fighter),
     BoardToggleIdleMove(Space),
     CreateModalEvent(Fighter),
+    Attack(Fighter, Space),
+    UpdateFighter(Fighter),
 }
 
 #[derive(Clone)]

@@ -9,6 +9,8 @@ use crate::models::position::Position;
 
 use crate::models::space::Space;
 
+use super::fighter;
+
 const DEFAULT_COLUMNS: i32 = 9;
 const DEFAULT_ROWS: i32 = 5;
 
@@ -90,21 +92,25 @@ impl GameObject for Board {
     fn get_status(&self) -> &BoardState { &self.state }
 
     fn click_action(&mut self, position: &Position, events: &mut Vec<SceneEvent>) {
-        for row in self.map.iter_mut() {
+        //for row in self.map.iter_mut() {
             let mut clicked = false;
 
             /* Click action should be according to state */
             match &self.state {
                 BoardState::Idle => {
+                    for row in self.map.iter_mut() {
                     for space in row {
                         if space.click(&position, events) {
                             clicked = true;
                             break; // No need to check the rest
                         }
                     }
+                    if clicked { break }
+                }
                 },
                 BoardState::SelectingMove(fighter_option) => {
                     if let Some(fighter) = fighter_option {
+                        for row in self.map.iter_mut() {
                         for space in row {
                             if space.is_clicked(&position) && space.fighter.is_none() && fighter.can_move_to(space) {
                                 events.push(SceneEvent::BoardEvent(BoardEvent::DropFighter(fighter.clone())));
@@ -116,13 +122,30 @@ impl GameObject for Board {
                                 break; // No need to check the rest
                             }
                         }
+                        if clicked { break }
+                        }
                     }
                 },
+                BoardState::SelectingVictim(fighter_option) => {
+                    if let Some(fighter) = fighter_option {
+                        for row in self.map.iter_mut() {
+                        for space in row {
+                            if space.is_clicked(&position) && !space.fighter.is_none() && fighter.can_attack_to(space) {
+                                events.push(SceneEvent::BoardEvent(BoardEvent::Attack(fighter.clone(), space.clone())));
+                                clicked = true;
+                                break; // No need to check the rest
+                            }
+                        }
+                        if clicked { break }
+                    }
+                    }
+                    events.push(SceneEvent::BoardEvent(BoardEvent::BoardIdle));
+                }
                 _ => ()
-            }
+            };
 
-            if clicked { break }
-        }
+            //if clicked { break }
+        //}
     }
     
     fn get_pos(&self) -> &Position {
@@ -175,6 +198,27 @@ impl GameObject for Board {
                     let fighter_current_space = &mut self.map[fighter.y_index as usize][fighter.x_index as usize]; 
                     fighter_current_space.set_fighter(fighter.clone());
                 },
+                BoardEvent::BoardSelectVictim(fighter) => {
+                    println!("board select move");
+                    self.set_status(BoardState::SelectingVictim(Some(fighter.clone())));
+                    events.push(SceneEvent::PopLast);
+                },
+                BoardEvent::Attack(attacker, space ) => {
+                    if let Some(fighter) = &space.fighter {
+                        let mut victim = fighter.clone();
+                        attacker.attack(&mut victim);
+                        //events.push(SceneEvent::BoardEvent(BoardEvent::SetFighter(victim)));
+                        let fighter_current_space = &mut self.map[victim.y_index as usize][victim.x_index as usize]; 
+                        
+                        if !victim.is_dead() {
+                            let clone = victim.clone();
+                            fighter_current_space.set_fighter(clone);
+                        }
+                        else {
+                            fighter_current_space.drop_fighter();
+                        }
+                    }
+                },
                 _ => ()
             }
         });
@@ -191,6 +235,21 @@ impl GameObject for Board {
                         for space in row {
                             if space.near(&container_space) {
                                 space.draw_selectable();
+                            }
+                            else {
+                                space.draw();
+                            }
+                        }
+                    }
+                }
+            },
+            BoardState::SelectingVictim(fighter_option) => {
+                if let Some(e) = fighter_option {
+                    
+                    for row in self.map.iter() {
+                        for space in row {
+                            if e.can_attack_to(space) {
+                                space.draw_attackable();
                             }
                             else {
                                 space.draw();

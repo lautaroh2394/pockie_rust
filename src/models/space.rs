@@ -1,4 +1,4 @@
-use macroquad::{color::{GREEN, PURPLE, WHITE, YELLOW}, shapes::draw_rectangle};
+use macroquad::{color::{GREEN, ORANGE, PURPLE, WHITE, YELLOW}, shapes::draw_rectangle};
 
 use crate::{
     enums::event::SceneEvent, 
@@ -21,12 +21,16 @@ pub struct Space {
 
 impl Space {
     pub fn clone(&self) -> Self {
+        let mut f = None;
+        if let Some(fig) = &self.fighter {
+            f = Some(fig.clone());
+        }
         Space {
             position: self.position.clone(),
             toggled: self.toggled,
             x_index: self.x_index,
             y_index: self.y_index,
-            fighter: None,
+            fighter: f,
         }
     }
     pub fn new(x: f32, y: f32, w: f32, h: f32, x_index: i32, y_index: i32) -> Space {
@@ -65,7 +69,29 @@ impl Space {
             f.draw();
         }
     }
+
+    pub fn draw_attackable(&self) {
+        draw_rectangle(
+            self.get_x(), 
+            self.get_y(), 
+            self.get_width(),
+            self.get_height(),
+            WHITE
+        );
+
+        draw_rectangle(
+            self.get_x() + SPACE_PAD,
+            self.get_y() + SPACE_PAD,
+            self.get_width() - SPACE_PAD * 2.,
+            self.get_height() - SPACE_PAD * 2., ORANGE
+        );
+
+        if let Some(f) = &self.fighter {
+            f.draw();
+        }
+    }
     pub fn set_fighter(&mut self, fighter: Fighter) {
+        println!("{}", fighter.hp);
         self.fighter = Some(fighter);
     }
 
