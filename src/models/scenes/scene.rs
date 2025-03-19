@@ -47,10 +47,9 @@ impl GameObject for Scene {
         self.renderer.render(self);
     }
 
-    fn click_action(&mut self, position: &Position, _events: &mut Vec<SceneEvent>) {
+    fn click_action(&mut self, position: &Position) {
         for element in self.elements.iter_mut() {
-            //element.click(position, &mut self.events);
-            element.click(position, _events);
+            element.click(position);
         }
     }
 
@@ -58,34 +57,9 @@ impl GameObject for Scene {
         &self.position
     }
     
-    fn manage_events(&mut self, events: &mut Vec<SceneEvent>){
-        /*
+    fn manage_events(&mut self){
         for object in self.elements.iter_mut() {
-            object.manage_events(&mut self.events);
+            object.manage_events();
         }
-        */
-
-        for object in self.elements.iter_mut() {
-            object.manage_events(events);
-        }
-
-        for event in self.events.iter() {
-            match event {
-                /*
-                SceneEvent::BoardEvent(BoardEvent::BoardToggleIdleMove(space)) => {
-                    let status = self.elements[0].get_status();
-                    let status = Board::toggle_status(status, &space);
-                    if let Some(s) = status {
-                        self.elements[0].set_status(s);
-                    }
-                },
-                SceneEvent::BoardEvent(BoardEvent::BoardSelectMove(space)) => {
-                    self.elements[0].set_status(BoardStatus::SELECTING_MOVE(Some(space.clone())));
-                },
-                */
-                _ => {events.push(event.clone());}
-            }
-        }
-        self.events = Vec::new();
     }
 }

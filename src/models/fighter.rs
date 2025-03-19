@@ -1,7 +1,7 @@
 use macroquad::{color::{GREEN, PINK, RED}, shapes::draw_rectangle};
 
 use crate::{
-    enums::event::SceneEvent, models::position::Position, traits::game_object::GameObject};
+    enums::event::SceneEvent, global_events::push_global_event, models::position::Position, traits::game_object::GameObject};
 
 use super::space::Space;
 
@@ -106,15 +106,10 @@ impl GameObject for Fighter {
         &self.position
     }
 
-    fn click_action(&mut self, _position: &Position, events: &mut Vec<SceneEvent>) {
+    fn click_action(&mut self, _position: &Position) {
         println!("fighter clicked");
-        events.push(
-            SceneEvent::CreateModal(self.clone())
-            /*
-            SceneEvent::BoardEvent(
-                BoardEvent::BoardToggleIdleMove(self.clone())
-            )
-             */
+        push_global_event(
+            SceneEvent::new_create_modal(self.clone())
         );
     }
 }

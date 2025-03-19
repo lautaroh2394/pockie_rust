@@ -10,7 +10,7 @@ pub struct Button {
 }
 
 pub trait ButtonAction {
-    fn execute(&self, events: &mut Vec<SceneEvent>);
+    fn execute(&self);
 }
 
 impl Button {
@@ -35,8 +35,8 @@ impl GameObject for Button {
         draw_text(&self.text, self.get_x() + 10., self.get_y() + 20.,25., BLACK);
     }
 
-    fn click_action(&mut self, _position: &Position, events: &mut Vec<SceneEvent>) {
-        self.action.execute(events)
+    fn click_action(&mut self, _position: &Position) {
+        self.action.execute()
     }
 
     fn get_pos(&self) -> &Position {

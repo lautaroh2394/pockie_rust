@@ -103,9 +103,9 @@ impl Space {
 
 impl GameObject for Space {
     // todo: events should be "scene_events"?
-    fn click_action(&mut self, position: &Position, events: &mut Vec<SceneEvent>){
+    fn click_action(&mut self, position: &Position){
         if let Some(f) = &mut self.fighter {
-            f.click(position, events);
+            f.click(position);
         }
     }
 

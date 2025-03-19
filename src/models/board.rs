@@ -4,12 +4,12 @@ use macroquad::window::{screen_height, screen_width};
 
 use crate::enums::board_status::BoardState;
 use crate::enums::event::{BoardEvent, SceneEvent};
+use crate::global_events::{global_events_iterate_mut, push_global_event, remove_global_event_by_id};
 use crate::traits::game_object::GameObject;
 use crate::models::position::Position;
 
 use crate::models::space::Space;
-
-use super::fighter;
+use crate::GLOBAL_EVENTS;
 
 const DEFAULT_COLUMNS: i32 = 9;
 const DEFAULT_ROWS: i32 = 5;
@@ -91,16 +91,14 @@ impl GameObject for Board {
 
     fn get_status(&self) -> &BoardState { &self.state }
 
-    fn click_action(&mut self, position: &Position, events: &mut Vec<SceneEvent>) {
-        //for row in self.map.iter_mut() {
+    fn click_action(&mut self, position: &Position) {
             let mut clicked = false;
 
-            /* Click action should be according to state */
             match &self.state {
                 BoardState::Idle => {
                     for row in self.map.iter_mut() {
                     for space in row {
-                        if space.click(&position, events) {
+                        if space.click(&position) {
                             clicked = true;
                             break; // No need to check the rest
                         }
@@ -113,11 +111,11 @@ impl GameObject for Board {
                         for row in self.map.iter_mut() {
                         for space in row {
                             if space.is_clicked(&position) && space.fighter.is_none() && fighter.can_move_to(space) {
-                                events.push(SceneEvent::BoardEvent(BoardEvent::DropFighter(fighter.clone())));
+                                push_global_event(SceneEvent::new_board_event(BoardEvent::DropFighter(fighter.clone())));
                                 let mut f = fighter.clone();
                                 f.update_map_position(&space);
-                                events.push(SceneEvent::BoardEvent(BoardEvent::SetFighter(f)));
-                                events.push(SceneEvent::BoardEvent(BoardEvent::BoardIdle));
+                                push_global_event(SceneEvent::new_board_event(BoardEvent::SetFighter(f)));
+                                push_global_event(SceneEvent::new_board_event(BoardEvent::BoardIdle));
                                 clicked = true;
                                 break; // No need to check the rest
                             }
@@ -131,7 +129,7 @@ impl GameObject for Board {
                         for row in self.map.iter_mut() {
                         for space in row {
                             if space.is_clicked(&position) && !space.fighter.is_none() && fighter.can_attack_to(space) {
-                                events.push(SceneEvent::BoardEvent(BoardEvent::Attack(fighter.clone(), space.clone())));
+                                push_global_event(SceneEvent::new_board_event(BoardEvent::Attack(fighter.clone(), space.clone())));
                                 clicked = true;
                                 break; // No need to check the rest
                             }
@@ -139,85 +137,62 @@ impl GameObject for Board {
                         if clicked { break }
                     }
                     }
-                    events.push(SceneEvent::BoardEvent(BoardEvent::BoardIdle));
+                    push_global_event(SceneEvent::new_board_event(BoardEvent::BoardIdle));
                 }
                 _ => ()
             };
-
-            //if clicked { break }
-        //}
     }
     
     fn get_pos(&self) -> &Position {
         &self.position
     }
 
-    fn manage_events(&mut self, events: &mut Vec<SceneEvent>) {
-        let mut board_events = Vec::new();
-        let mut new_events = Vec::<SceneEvent>::new();
-
-        events.iter().for_each(|ev| {
-            match ev {
+    fn manage_events(&mut self) {
+        global_events_iterate_mut(|event| {
+            let mut exec = true;
+            match event {
                 SceneEvent::BoardEvent(board_event) => {
-                    board_events.push(board_event.clone());
-                },
-                ev => {
-                    new_events.push(ev.clone());
-                }
-            }
-        });
-        
-        events.clear();
-        for ev in new_events.iter_mut() {
-            events.push(ev.clone());
-        }
-
-        board_events.iter().for_each(|board_event| {
-            match board_event {
-                BoardEvent::BoardToggleIdleMove(space) => {
-                    let status = self.get_status();
-                    let status = Board::toggle_status(status, &space);
-                    if let Some(s) = status {
-                        self.set_status(s);
-                    }
-                },
-                BoardEvent::BoardSelectMove(fighter) => {
-                    println!("board select move");
-                    self.set_status(BoardState::SelectingMove(Some(fighter.clone())));
-                    events.push(SceneEvent::PopLast);
-                },
-                BoardEvent::BoardIdle => {
-                    println!("board SET IDLE");
-                    self.set_status(BoardState::Idle);
-                },
-                BoardEvent::DropFighter(fighter) => {
-                    let fighter_current_space = &mut self.map[fighter.y_index as usize][fighter.x_index as usize]; 
-                    fighter_current_space.drop_fighter();
-                },
-                BoardEvent::SetFighter(fighter) => {
-                    let fighter_current_space = &mut self.map[fighter.y_index as usize][fighter.x_index as usize]; 
-                    fighter_current_space.set_fighter(fighter.clone());
-                },
-                BoardEvent::BoardSelectVictim(fighter) => {
-                    println!("board select move");
-                    self.set_status(BoardState::SelectingVictim(Some(fighter.clone())));
-                    events.push(SceneEvent::PopLast);
-                },
-                BoardEvent::Attack(attacker, space ) => {
-                    if let Some(fighter) = &space.fighter {
-                        let mut victim = fighter.clone();
-                        attacker.attack(&mut victim);
-                        //events.push(SceneEvent::BoardEvent(BoardEvent::SetFighter(victim)));
-                        let fighter_current_space = &mut self.map[victim.y_index as usize][victim.x_index as usize]; 
-                        
-                        if !victim.is_dead() {
-                            let clone = victim.clone();
-                            fighter_current_space.set_fighter(clone);
-                        }
-                        else {
+                    match &board_event.event {
+                        BoardEvent::BoardSelectMove(fighter) => {
+                            println!("board select move");
+                            self.set_status(BoardState::SelectingMove(Some(fighter.clone())));
+                            push_global_event(SceneEvent::new_pop_last());
+                        },
+                        BoardEvent::BoardIdle => {
+                            println!("board SET IDLE");
+                            self.set_status(BoardState::Idle);
+                        },
+                        BoardEvent::DropFighter(fighter) => {
+                            let fighter_current_space = &mut self.map[fighter.y_index as usize][fighter.x_index as usize]; 
                             fighter_current_space.drop_fighter();
-                        }
+                        },
+                        BoardEvent::SetFighter(fighter) => {
+                            let fighter_current_space = &mut self.map[fighter.y_index as usize][fighter.x_index as usize]; 
+                            fighter_current_space.set_fighter(fighter.clone());
+                        },
+                        BoardEvent::BoardSelectVictim(fighter) => {
+                            println!("board select victim");
+                            self.set_status(BoardState::SelectingVictim(Some(fighter.clone())));
+                            push_global_event(SceneEvent::new_pop_last());
+                        },
+                        BoardEvent::Attack(attacker, space ) => {
+                            if let Some(fighter) = &space.fighter {
+                                let mut victim = fighter.clone();
+                                attacker.attack(&mut victim);
+                                let fighter_current_space = &mut self.map[victim.y_index as usize][victim.x_index as usize]; 
+                                
+                                if !victim.is_dead() {
+                                    let clone = victim.clone();
+                                    fighter_current_space.set_fighter(clone);
+                                }
+                                else {
+                                    fighter_current_space.drop_fighter();
+                                }
+                            }
+                        },
+                        _ => { exec = false;}
                     }
+                    if exec { remove_global_event_by_id(event.id());}
                 },
                 _ => ()
             }

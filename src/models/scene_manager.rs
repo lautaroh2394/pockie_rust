@@ -1,3 +1,4 @@
+use crate::global_events::{global_events_iterate_mut, push_global_event, remove_global_event_by_id, remove_global_events};
 use crate::models::{
     scenes::scene::Scene,
     board::Board,
@@ -12,7 +13,6 @@ use super::scenes::modal::Modal;
 
 pub struct SceneManager {
     scenes: Vec<Scene>,
-    events: Vec<SceneEvent>
 }
 
 impl SceneManager {
@@ -29,7 +29,7 @@ impl SceneManager {
     }
 
     pub fn new() -> SceneManager{
-        SceneManager { scenes: Vec::new(), events: Vec::new() }
+        SceneManager { scenes: Vec::new()}
     }
 
     pub fn push_scene(&mut self, scene: Scene){
@@ -38,21 +38,26 @@ impl SceneManager {
 
     pub fn manage_events(&mut self) {
         for scene in self.scenes.iter_mut().rev() {
-            scene.manage_events(&mut self.events);
+            scene.manage_events();
         }
         
-        for event in self.events.iter() {
+        global_events_iterate_mut(|event| {
+            let mut exec = true;
             match event {
-                SceneEvent::CreateModal(f) => {
-                    self.scenes.push(Modal::new(f.clone()));
+                SceneEvent::CreateModal(data) => {
+                    self.scenes.push(Modal::new(data.fighter.clone()));
                 },
-                SceneEvent::PopLast => {
+                SceneEvent::PopLast(data) => {
                     self.scenes.pop();
                 },
-                _ => ()
+                _ => {
+                    exec = false;
+                }
             }
-        }
-        self.events = Vec::new();
+            if exec { remove_global_event_by_id((event.id()));}
+        });
+
+        remove_global_events();
     }
 }
 
@@ -68,7 +73,7 @@ impl SceneManager {
     pub fn click(&mut self, x: f32, y: f32) {
        let scene = self.scenes.last_mut().unwrap();
        let position = Position { x, y, w:0., h:0.};
-       scene.click(&position, &mut self.events);
+       scene.click(&position);
     }
 
     pub fn pop_scene(&mut self) {

@@ -1,6 +1,6 @@
 use macroquad::{color::GRAY, shapes::draw_rectangle, window::screen_width};
 
-use crate::{enums::event::SceneEvent, models::{fighter::Fighter, position::Position}, traits::game_object::GameObject};
+use crate::{enums::event::SceneEvent, global_events::push_global_event, models::{fighter::Fighter, position::Position}, traits::game_object::GameObject};
 
 use super::buttons::{attack_button::AttackButton, button::Button, move_button::MoveButton};
 
@@ -33,7 +33,6 @@ impl CharacterMenu {
     }
 
     pub fn add_options(&mut self, options_config: Vec<String>) {
-        //let mut option_height = ((self.get_height() - (10. * 2.)) / options_config.len() as f32) % 30.;
         let option_height = 30.;
         let option_width = self.get_width() - (10. * 2.);
         let x = self.get_x() + 10.;
@@ -85,9 +84,9 @@ impl GameObject for CharacterMenu {
         }
     }
 
-    fn click_action(&mut self, position: &Position, events: &mut Vec<SceneEvent>){
+    fn click_action(&mut self, position: &Position){
         for option in self.options.iter_mut() {
-            option.click(position, events);
+            option.click(position);
         }
     }
     
@@ -95,12 +94,12 @@ impl GameObject for CharacterMenu {
         &self.position
     }
 
-    fn click(&mut self, position: &Position, events: &mut Vec<SceneEvent>) -> bool {
+    fn click(&mut self, position: &Position) -> bool {
         if self.is_clicked(position) {
-            self.click_action(position, events);
+            self.click_action(position);
             return true;
         }
-        events.push(SceneEvent::PopLast);
+        push_global_event(SceneEvent::new_pop_last());
         false
     }
 }

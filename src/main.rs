@@ -1,11 +1,14 @@
+use enums::event::SceneEvent;
 use macroquad::prelude::*;
 mod window_conf;
+mod global_events;
 mod models;
 mod render_logic;
 mod enums;
 mod traits;
 use models::scene_manager::SceneManager;
 use window_conf::default_conf;
+use global_events::GLOBAL_EVENTS;
 
 #[macroquad::main(default_conf)]
 async fn main() {

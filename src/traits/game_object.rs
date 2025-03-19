@@ -2,7 +2,7 @@ use crate::{enums::{board_status::BoardState, event::SceneEvent}, models::positi
 
 pub trait GameObject {
     fn draw(&self);
-    fn click_action(&mut self, position: &Position, events: &mut Vec<SceneEvent>);
+    fn click_action(&mut self, position: &Position);
 
     fn get_pos(&self) -> &Position;
 
@@ -22,9 +22,9 @@ pub trait GameObject {
         self.get_pos().h
     }
     
-    fn click(&mut self, position: &Position, events: &mut Vec<SceneEvent>) -> bool {
+    fn click(&mut self, position: &Position) -> bool {
         if self.is_clicked(position) {
-            self.click_action(position, events);
+            self.click_action(position);
             return true;
         }
         false
@@ -44,5 +44,5 @@ pub trait GameObject {
     fn get_name(&self) -> String { String::from("Nombre sin definir") }
     fn set_status(&mut self, _: BoardState){}
     fn get_status(&self) -> &BoardState { &BoardState::Idle }
-    fn manage_events(&mut self, _events: &mut Vec<SceneEvent>) {}
+    fn manage_events(&mut self) {}
 }

@@ -1,4 +1,4 @@
-use crate::{enums::event::{BoardEvent, SceneEvent}, models::{fighter::Fighter, scenes::buttons::button::ButtonAction}};
+use crate::{enums::event::{BoardEvent, SceneEvent}, global_events::push_global_event, models::{fighter::Fighter, scenes::buttons::button::ButtonAction}};
 
 pub struct AttackButtonAction {
     fighter: Fighter,
@@ -13,8 +13,8 @@ impl AttackButtonAction {
 }
 
 impl ButtonAction for AttackButtonAction {
-    fn execute(&self, events: &mut Vec<SceneEvent>) {
-        events.push(SceneEvent::BoardEvent(BoardEvent::BoardSelectVictim(self.fighter.clone())));
+    fn execute(&self) {
+        push_global_event(SceneEvent::new_board_event(BoardEvent::BoardSelectVictim(self.fighter.clone())));
         println!("attack button clicked")
     }
 }

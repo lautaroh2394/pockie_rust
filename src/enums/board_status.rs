@@ -1,4 +1,4 @@
-use crate::models::{fighter::Fighter, space::Space};
+use crate::models::fighter::Fighter;
 
 pub enum BoardState {
     Idle,
