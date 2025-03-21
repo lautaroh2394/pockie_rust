@@ -1,4 +1,4 @@
-use crate::{enums::event::{BoardEvent, SceneEvent}, global_events::push_global_event, models::{fighter::Fighter, scenes::buttons::button::ButtonAction}};
+use crate::{enums::{board_events::BoardEvent, event::SceneEvent}, global_events::push_global_event, models::{buttons::button::ButtonAction, fighter::Fighter}};
 
 pub struct MoveButtonAction {
     fighter: Fighter,
@@ -14,7 +14,7 @@ impl MoveButtonAction {
 
 impl ButtonAction for MoveButtonAction {
     fn execute(&self) {
-        push_global_event(SceneEvent::new_board_event(BoardEvent::BoardSelectMove(self.fighter.clone())));
+        push_global_event(SceneEvent::board_event(BoardEvent::BoardSelectMove(self.fighter.clone())));
         println!("move button clicked")
     }
 }

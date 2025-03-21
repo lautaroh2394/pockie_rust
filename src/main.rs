@@ -1,4 +1,3 @@
-use enums::event::SceneEvent;
 use macroquad::prelude::*;
 mod window_conf;
 mod global_events;

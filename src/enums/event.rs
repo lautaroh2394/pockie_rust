@@ -1,16 +1,7 @@
 use crate::models::{fighter::Fighter, space::Space};
 use macroquad::ui::hash;
 
-
-#[derive(Clone)]
-pub enum BoardEvent {
-    BoardIdle,
-    BoardSelectVictim(Fighter),
-    BoardSelectMove(Fighter),
-    DropFighter(Fighter),
-    SetFighter(Fighter),
-    Attack(Fighter, Space),
-}
+use super::board_events::BoardEvent;
 
 #[derive(Clone)]
 pub enum SceneEvent {
@@ -38,7 +29,7 @@ pub struct PopLastData {
 
 
 impl SceneEvent {
-    pub fn new_create_modal(fighter: Fighter) -> Self {
+    pub fn create_modal(fighter: Fighter) -> Self {
         let data = CreateModalData {
             id: hash!(),
             fighter,
@@ -46,7 +37,7 @@ impl SceneEvent {
         SceneEvent::CreateModal(data)
     }
 
-    pub fn new_board_event(board_event: BoardEvent) -> Self {
+    pub fn board_event(board_event: BoardEvent) -> Self {
         let data = BoardEventData {
             id: hash!(),
             event: board_event
@@ -54,7 +45,7 @@ impl SceneEvent {
         SceneEvent::BoardEvent(data)
     }
 
-    pub fn new_pop_last() -> Self {
+    pub fn pop_last() -> Self {
         SceneEvent::PopLast(PopLastData{ id: hash!()})
     }
 

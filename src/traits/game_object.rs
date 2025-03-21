@@ -1,4 +1,4 @@
-use crate::{enums::{board_status::BoardState, event::SceneEvent}, models::position::Position};
+use crate::models::position::Position;
 
 pub trait GameObject {
     fn draw(&self);
@@ -42,7 +42,5 @@ pub trait GameObject {
     }
 
     fn get_name(&self) -> String { String::from("Nombre sin definir") }
-    fn set_status(&mut self, _: BoardState){}
-    fn get_status(&self) -> &BoardState { &BoardState::Idle }
     fn manage_events(&mut self) {}
 }

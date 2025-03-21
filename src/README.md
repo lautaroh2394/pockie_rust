@@ -1,4 +1,5 @@
 todos:
+- definir el strategy para el management de eventos del board
 - definir el modelo de eventos y renderizado. hoy hay un solo tipo de eventos y muchos terminan siendo pasados de la escena al manager
 - armar menu y botones (no podría usar el ui de macroquad a menos que modifique el modelo de renderizado y eventos)
   - cuando se crean menus y botones reciben una posicion, deben:

@@ -1,8 +1,6 @@
 use macroquad::{color::GRAY, shapes::draw_rectangle, window::screen_width};
 
-use crate::{enums::event::SceneEvent, global_events::push_global_event, models::{fighter::Fighter, position::Position}, traits::game_object::GameObject};
-
-use super::buttons::{attack_button::AttackButton, button::Button, move_button::MoveButton};
+use crate::{enums::event::SceneEvent, global_events::push_global_event, models::{buttons::{attack_button::AttackButton, button::Button, move_button::MoveButton}, fighter::Fighter, position::Position}, traits::game_object::GameObject};
 
 pub struct CharacterMenu {
     position: Position,
@@ -99,7 +97,7 @@ impl GameObject for CharacterMenu {
             self.click_action(position);
             return true;
         }
-        push_global_event(SceneEvent::new_pop_last());
+        push_global_event(SceneEvent::pop_last());
         false
     }
 }

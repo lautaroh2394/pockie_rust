@@ -109,7 +109,7 @@ impl GameObject for Fighter {
     fn click_action(&mut self, _position: &Position) {
         println!("fighter clicked");
         push_global_event(
-            SceneEvent::new_create_modal(self.clone())
+            SceneEvent::create_modal(self.clone())
         );
     }
 }
